@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { defineConfig } from 'drizzle-kit';
 
-if(!process.env?.DATEBSEURL) throw new Error("Datebase url not set up");
+if(!process.env?.DATABASE_URL) throw new Error("Datebase url not set up");
 
 export default defineConfig({
   schema: './src/lib/db/schema.ts',

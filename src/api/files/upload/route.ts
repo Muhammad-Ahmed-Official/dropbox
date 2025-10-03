@@ -46,12 +46,28 @@ export const POST = asyncHandler(async (request:NextRequest):Promise<NextRespons
     const fileExtension = file?.name?.split(".").pop() || ""
     const uniqueFileName = `${uuidv4()}.${fileExtension}`
 
-    await imageKit.upload({
+    const uploadResponse = await imageKit.upload({
         file: fileBuffer,
         fileName: uniqueFileName,
         folder: folderPath,
         useUniqueFileName: false,
-    })
+    });
 
-    return nextResponse(200, "");
+    const fileData = {
+        id: uploadResponse.fileId,
+        name: file?.name,
+        path: uploadResponse.filePath,
+        size: file.size,
+        type: file.type,
+        fileUrl: uploadResponse.url,
+        thumbnailUrl: uploadResponse.thumbnailUrl || null,
+        userId: userId,
+        parentId: parentId,
+        isFolder: false,
+        isStarred: false,
+        isTrash: false,
+    }
+
+    const [NewFile] = await db.insert(files).values(fileData).returning()
+    return nextResponse(200, "file upload successfully");
 })

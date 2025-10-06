@@ -15,16 +15,17 @@ import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Mail, Lock, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { apiClient } from "@/lib/api-client";
+// const [isSubmitting, setIsSubmitting] = useState(false);   
+// const [authError, setAuthError] = useState<string | null>();
 
-export default function signUpForm() {
-    const [verifying, setVeirfying] = useState<Boolean>(false);
+export default function SignUpForm() {
+    const [verifying, setVerifying] = useState<Boolean>(false);
     const {signUp, isLoaded, setActive} = useSignUp();
     const [verificationCode, setVerificationCode] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false); 
     const router = useRouter();
-    // const [isSubmitting, setIsSubmitting] = useState(false);   
-    // const [authError, setAuthError] = useState<string | null>();
     const { register, handleSubmit, formState: {errors, isLoading}} = useForm<z.infer<typeof signUpSchema>>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
@@ -32,7 +33,7 @@ export default function signUpForm() {
             password: "",
             passwordConfirmation: "",
         }
-    })
+    });
     
     const onSubmit = async(data:z.infer<typeof signUpSchema>) => {
         if(!isLoaded) return;
@@ -43,21 +44,23 @@ export default function signUpForm() {
                     password: data?.password,
                 })
             }
-        )
+        );
+
         await asyncHandlerFront(
             async() => {
                 await signUp.prepareEmailAddressVerification({
                     strategy: "email_code",
                 })
-                setVeirfying(true);
+                setVerifying(true);
             }
-        )
+        );
+
     }
 
     const handleVerificationSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if(!isLoaded && !signUp) return;
-
+        // setIsSubmitting(false);
         // setIsSubmitting(false);
         await asyncHandlerFront(
             async() => {
@@ -70,15 +73,21 @@ export default function signUpForm() {
                     router.push("/dashboard");
                 }else {
                     toast.error("Verification incomplete");
+                    return;
                 }
             }
-        )
-        // setIsSubmitting(false);
+        );
+        
+        await asyncHandlerFront(
+            async() => {
+                await apiClient.signUp();
+            }
+        );
     }
 
     if(verifying){
         return(
-        <Card className="w-full max-w-md border border-default-200 bg-default-50 shadow-xl">
+        <Card className="w-full max-w-md border border-default-200 p-4  bg-default-50 shadow-xl">
             <CardHeader className="flex flex-col gap-1 items-center pb-2">
                 <h1 className="text-2xl font-bold text-default-900"> Verify Your Email </h1>
                 <p className="text-default-500 text-center"> We've sent a verification code to your email </p>

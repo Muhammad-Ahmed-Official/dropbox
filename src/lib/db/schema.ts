@@ -1,5 +1,13 @@
-import { pgTable, text, uuid, integer, boolean, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, text, uuid, integer, boolean, timestamp, serial, varchar } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
+
+export const users = pgTable("users", {
+  id: text("id").primaryKey(), 
+  userName: varchar("userName", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+});
+
+
 
 export const files = pgTable("files", {
     id: uuid("id").defaultRandom().primaryKey(),

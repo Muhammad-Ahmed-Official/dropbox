@@ -16,7 +16,7 @@ import { Mail, Lock, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react"
 import { Input } from '@heroui/input'
 import toast from 'react-hot-toast'
 
-export default function signInForm() {
+export default function SignInForm() {
     const router = useRouter();
     const { signIn, isLoaded, setActive } = useSignIn();
     // const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +47,7 @@ export default function signInForm() {
     };
 
   return (
-    <Card className="w-full max-w-md border border-default-200 bg-default-50 shadow-xl">
+    <Card className="w-full max-w-md border border-default-200 p-4 bg-default-50 shadow-xl">
       <CardHeader className="flex flex-col gap-1 items-center pb-2">
         <h1 className="text-2xl font-bold text-default-900">Welcome Back</h1>
         <p className="text-default-500 text-center"> Sign in to access your secure cloud storage </p>

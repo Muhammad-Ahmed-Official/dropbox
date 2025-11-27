@@ -2,13 +2,26 @@
 
 import { Card, CardBody, CardHeader, Tab, Tabs } from '@heroui/react'
 import { FileText, FileUp, User } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FileUploadForm from './FileUploadForm';
 import FileList from './FileList';
 import UserProfile from './UserProfile';
+import { useUserContext } from '@/contextApi/UserProvider';
+import { useSearchParams } from 'next/navigation';
 
 export default function DashboardContent() {
-  const [activeTab, setActiveTab] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("files");
+  const { currentUser } = useUserContext();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+
+  useEffect(() => {
+    if (tabParam === "profile") {
+      setActiveTab("profile");
+    } else {
+      setActiveTab("files");
+    }
+  }, [tabParam]);
 
   return (
         <>
@@ -16,23 +29,21 @@ export default function DashboardContent() {
         <h2 className="text-4xl font-bold text-default-900">
           Hi,{" "}
           <span className="text-primary">
-            {/* {userName?.length > 10
-              ? `${userName?.substring(0, 10)}...`
-              : userName?.split(" ")[0] || "there"} */}
+            {currentUser?.userName?.length! > 10
+              ? `${currentUser?.userName?.substring(0, 10)}...`
+              : currentUser?.userName?.split(" ")[0] || "there"}
           </span>
           !
         </h2>
-        <p className="text-default-600 mt-2 text-lg">
-          Your images are waiting for you.
-        </p>
+        <p className="text-default-600 mt-2 text-lg"> Your images are waiting for you. </p>
       </div>
 
       <Tabs
         aria-label="Dashboard Tabs"
         color="primary"
         variant="underlined"
-        // selectedKey={activeTab}
-        // onSelectionChange={(key) => setActiveTab(key as string)}
+        selectedKey={activeTab}
+        onSelectionChange={(key) => setActiveTab(key as string)}
         classNames={{
           tabList: "gap-6",
           tab: "py-3",
@@ -57,7 +68,7 @@ export default function DashboardContent() {
                 </CardHeader>
                 <CardBody>
                   <FileUploadForm
-                    // userId={userId}
+                    // userId={currentUser?.id}
                     // onUploadSuccess={handleFileUploadSuccess}
                     // currentFolder={currentFolder}
                   />

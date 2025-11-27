@@ -1,15 +1,71 @@
+"use client";
+
 import React from 'react'
-import { useUser, useClerk } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader, CardFooter } from "@heroui/card";
 import { Spinner } from "@heroui/spinner";
 import { Avatar } from "@heroui/avatar";
 import { Divider } from "@heroui/divider";
-// import Badge from "@/components/ui/Badge";
 import { useRouter } from "next/navigation";
-import { Mail, User, LogOut, Shield, ArrowRight } from "lucide-react";
+import { Mail, User, LogOut, Shield, ArrowRight} from "lucide-react";
+import { useUserContext } from '@/contextApi/UserProvider';
+import { Badge } from '@heroui/react';
 
 export default function UserProfile() {
+  const { signOut } = useClerk();
+  const { currentUser, isLoaded, isSignedIn } = useUserContext();
+  const router = useRouter();
+  const fullName = `${currentUser?.firstName || ""} ${currentUser?.lastName || ""}`.trim();
+  const email = currentUser?.emailAddress || "";
+  const userRole = currentUser?.role;
+  const initials = fullName
+    .split(" ")
+    .map((name) => name[0])
+    .join("")
+    .toUpperCase();
+
+  if (!isLoaded) {
+    return (
+      <div className="flex flex-col justify-center items-center p-12">
+        <Spinner size="lg" color="primary" />
+        <p className="mt-4 text-default-600">Loading your profile...</p>
+      </div>
+    );
+  }
+
+  if(!isSignedIn){
+     return (
+      <Card className="max-w-md mx-auto border border-default-200 bg-default-50 shadow-sm hover:shadow-md transition-shadow">
+        <CardHeader className="flex gap-3">
+          <User className="h-6 w-6 text-primary" />
+          <h2 className="text-xl font-semibold">User Profile</h2>
+        </CardHeader>
+        <Divider />
+        <CardBody className="text-center py-10">
+          <div className="mb-6">
+            <Avatar name="Guest" size="lg" className="mx-auto mb-4" />
+            <p className="text-lg font-medium">Not Signed In</p>
+            <p className="text-default-500 mt-2">
+              Please sign in to access your profile
+            </p>
+          </div>
+          <Button
+            variant="solid"
+            color="primary"
+            size="lg"
+            onClick={() => router.push("/sign-in")}
+            className="px-8"
+            endContent={<ArrowRight className="h-4 w-4" />}
+          >
+            Sign In
+          </Button>
+        </CardBody>
+      </Card>
+    );
+  }
+
+
   return (
      <Card className="max-w-md mx-auto border border-default-200 bg-default-50 shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="flex gap-3">
@@ -19,9 +75,9 @@ export default function UserProfile() {
       <Divider />
       <CardBody className="py-6">
         <div className="flex flex-col items-center text-center mb-6">
-          {/* {user.imageUrl ? (
+          {currentUser?.imageUrl ? (
             <Avatar
-              src={user.imageUrl}
+              src={currentUser?.imageUrl}
               alt={fullName}
               size="lg"
               className="mb-4 h-24 w-24"
@@ -32,15 +88,15 @@ export default function UserProfile() {
               size="lg"
               className="mb-4 h-24 w-24 text-lg"
             />
-          )} */}
-          {/* <h3 className="text-xl font-semibold">{fullName}</h3> */}
-          {/* {user.emailAddresses && user.emailAddresses.length > 0 && (
+          )}
+          <h3 className="text-xl font-semibold">{fullName}</h3>
+          {currentUser?.emailAddress && currentUser?.emailAddress.length > 0 && (
             <div className="flex items-center gap-2 mt-1 text-default-500">
               <Mail className="h-4 w-4" />
               <span>{email}</span>
             </div>
-          )} */}
-          {/* {userRole && (
+          )}
+          {userRole && (
             <Badge
               color="primary"
               variant="flat"
@@ -49,7 +105,7 @@ export default function UserProfile() {
             >
               {userRole}
             </Badge>
-          )} */}
+          )}
         </div>
 
         <Divider className="my-4" />
@@ -60,13 +116,13 @@ export default function UserProfile() {
               <Shield className="h-5 w-5 text-primary/70" />
               <span className="font-medium">Account Status</span>
             </div>
-            {/* <Badge
-              color="success"
+            <Badge  
               variant="flat"
+              color='success'
               aria-label="Account status: Active"
             >
               Active
-            </Badge> */}
+            </Badge>
           </div>
 
           <div className="flex justify-between items-center">
@@ -74,23 +130,15 @@ export default function UserProfile() {
               <Mail className="h-5 w-5 text-primary/70" />
               <span className="font-medium">Email Verification</span>
             </div>
-            {/* <Badge
-              color={
-                user.emailAddresses?.[0]?.verification?.status === "verified"
-                  ? "success"
-                  : "warning"
-              }
+            <Badge
+              color={ currentUser?.status === "verified" ? "success" : "warning" }
               variant="flat"
               aria-label={`Email verification status: ${
-                user.emailAddresses?.[0]?.verification?.status === "verified"
-                  ? "Verified"
-                  : "Pending"
-              }`}
+                currentUser?.status === "verified" ? "Verified" : "Pending" }
+              `}
             >
-              {user.emailAddresses?.[0]?.verification?.status === "verified"
-                ? "Verified"
-                : "Pending"}
-            </Badge> */}
+              {currentUser?.status === "verified" ? "Verified" : "Pending"}
+            </Badge>
           </div>
         </div>
       </CardBody>
@@ -100,7 +148,7 @@ export default function UserProfile() {
           variant="flat"
           color="danger"
           startContent={<LogOut className="h-4 w-4" />}
-        //   onClick={handleSignOut}
+          onClick={() => signOut(() => router.push("/"))}
         >
           Sign Out
         </Button>

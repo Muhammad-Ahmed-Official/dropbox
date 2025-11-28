@@ -10,8 +10,8 @@ export const PATCH = asyncHandler(async (request:NextRequest):Promise<NextRespon
     const { userId } = await auth();
     if(!userId) return nextError(401, "Unauthrorized");
 
-    const { pathname } = new URL(request.url);
-    const fileId = pathname.split("/").pop(); 
+    const url = new URL(request.url);
+    const fileId = url.searchParams.get("id") 
 
     if(!fileId) return nextError(400, "Params is empty");
 

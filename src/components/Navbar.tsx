@@ -61,13 +61,13 @@ export default function Navbar() {
       </SignedOut>
 
       <SignedIn>
-        {!isOnDashboard && (
+        {/* {!isOnDashboard && (
           <Link href="/dashboard">
             <Button color="primary" variant="flat" fullWidth>
               Dashboard
             </Button>
           </Link>
-        )}
+        )} */}
 
         <Button
           onClick={() => router.push("/dashboard?tab=profile")}

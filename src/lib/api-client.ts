@@ -1,27 +1,34 @@
+import { object } from "zod";
+
 type FetchOptions = {
-    method?: "GET" | "POST" | "PUT" | "DELETE";
+    method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     body?: any;
     headers?: Record<string, string>
 }
 
 class ApiClient {
-    private async fetch<T>(endPoint: string, options: FetchOptions = {}):Promise<T>{
-        const { method = "GET", body, headers = {}} = options;
-        
-        const defaultHeaders = {
-            "Content-type" : "application/json",
-            ...headers,
-        };
+   private async fetch<T>(endPoint: string, options: FetchOptions = {}): Promise<T> {
+  const { method = "GET", body, headers = {} } = options;
 
-        const response = await fetch(`/api/${endPoint}`, {
-            method,
-            headers: defaultHeaders,
-            body: body ? JSON.stringify(body) : undefined,
-        }); 
+  let finalHeaders = { ...headers };
+  let finalBody = body;
 
-        if(!response?.ok) throw new Error(await response.text());
-        return response.json();
-    };
+  if (!(body instanceof FormData)) {
+    // Only set Content-Type for JSON requests
+    finalHeaders["Content-Type"] = "application/json";
+    finalBody = body ? JSON.stringify(body) : undefined;
+  }
+
+  const response = await fetch(`/api/${endPoint}`, {
+    method,
+    headers: finalHeaders,
+    body: finalBody,
+  });
+
+  if (!response.ok) throw new Error(await response.text());
+  return response.json();
+}
+
 
 
     async signUp(){
@@ -29,6 +36,50 @@ class ApiClient {
             method: 'POST'
         })
     };
+
+    async createFolder(data:object){
+        return this.fetch("folders/create", {
+            method: "POST",
+            body: data
+        })
+    };
+
+
+    async uploadFile(data:object, config?: any){
+        return this.fetch("files/upload", {
+            method: "POST",
+            body: data
+        })
+    };
+
+
+    async uploadparent(data:object){
+        return this.fetch("files/upload", {
+            method: "POST",
+            body: data
+        })
+    };
+
+
+    async getFiles(){
+        return this.fetch("files")
+    };
+
+
+    async starFiles(id:string){
+        return this.fetch(`files/star?id=${id}`, {
+            method: "PATCH"
+        })
+    };
+
+
+    async delFiles(id:string){
+        return this.fetch(`files/delete?id=${id}`)
+    };
+
+    async trashFile(){
+        return this.fetch("files/trash")
+    }
 
 }
 

@@ -2,7 +2,7 @@
 
 import { Card, CardBody, CardHeader, Tab, Tabs } from '@heroui/react'
 import { FileText, FileUp, User } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import FileUploadForm from './FileUploadForm';
 import FileList from './FileList';
 import UserProfile from './UserProfile';
@@ -11,6 +11,13 @@ import { useSearchParams } from 'next/navigation';
 
 export default function DashboardContent() {
   const [activeTab, setActiveTab] = useState<string>("files");
+  const [currentFolder, setCurrentFolder] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleFileUploadSuccess = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1 );
+  }, []);
+
   const { currentUser } = useUserContext();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
@@ -68,9 +75,9 @@ export default function DashboardContent() {
                 </CardHeader>
                 <CardBody>
                   <FileUploadForm
-                    // userId={currentUser?.id}
-                    // onUploadSuccess={handleFileUploadSuccess}
-                    // currentFolder={currentFolder}
+                    userId={currentUser?.id!}
+                    onUploadSuccess={handleFileUploadSuccess}
+                    currentFolder={currentFolder}
                   />
                 </CardBody>
               </Card>

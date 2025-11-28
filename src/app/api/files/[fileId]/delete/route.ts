@@ -17,8 +17,8 @@ export const DELETE = asyncHandler(async (request:NextRequest):Promise<NextRespo
     const {userId} = await auth();
     if(!userId) return nextError(401, "Unauthorized");
 
-    const {pathname} = new URL(request.url);
-    const fileId = pathname.split("/").join();
+    const url = new URL(request.url);
+    const fileId = url.searchParams.get("id") 
     if(!fileId) return nextError(400, "Params is empty");
     
     const [file] = await db.select().from(files).where(and(

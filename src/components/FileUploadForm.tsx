@@ -1,57 +1,203 @@
+import { apiClient } from '@/lib/api-client'
+import { asyncHandlerFront } from '@/utils/AsyncHandlerFront'
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/input'
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Progress } from '@heroui/react'
 import { AlertTriangle, ArrowRight, FileUp, FolderPlus, Upload, X } from 'lucide-react'
-import React from 'react'
+import React, { ReactHTMLElement, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 
-export default function FileUploadForm() {
+interface FileUploadFormProps {
+  userId: string,
+  currentFolder: string | null,
+  onUploadSuccess: () => void
+}
+
+export default function FileUploadForm({userId, currentFolder = null, onUploadSuccess} : FileUploadFormProps) {
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    if(e.target.files && e.target.files[0]){
+      const selectedFile = e.target.files[0];
+      if(selectedFile?.size > 5 * 1014 * 1024){
+        setError("File size exceed 5MB limit");
+        return;
+      }
+      setFile(selectedFile);
+      setError(null);
+    }
+  };
+
+  const handleDrop = (e:React.DragEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    if(e.dataTransfer?.files && e.dataTransfer?.files[0]){
+      const selectedFile = e.dataTransfer?.files[0];
+      if(selectedFile?.size > 5 * 1014 * 1024){
+        setError("File size exceed 5MB limit");
+        return;
+      }
+
+      setFile(selectedFile);
+      setError(null);
+    }
+  };
+
+  const handleDragOver = (e:React.DragEvent<HTMLInputElement>) => {
+    e.preventDefault();
+  };
+
+  const clearFile = () => {
+    setFile(null);
+    setError(null);
+    if(fileInputRef.current){
+      fileInputRef.current.value = ""
+    }
+  };
+
+  const handleUpload = async() => {
+    if(!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("userId", userId);
+    if(currentFolder) formData.append("parentId", currentFolder);
+    setUploading(true);
+    setProgress(0);
+    setError(null);
+
+    await asyncHandlerFront(
+      async() => {
+        await apiClient.uploadFile(formData, {
+          onUploadProgress: (progressEvent: any) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setProgress(percentCompleted);
+            }
+          },
+        });
+         toast.success("File upload successfully", {
+          style: {
+            background: "#4ade80",
+            color: "#064e3b",
+            borderRadius: "8px",
+          },
+        });
+
+        clearFile();
+
+        if(onUploadSuccess){
+          onUploadSuccess()
+        };
+      },
+      (error) => {
+        toast.error(error?.message || "Something went wrong", {
+          style: {
+            background: "#fee2e2", 
+            color: "#b91c1c",        
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+            fontWeight: 500,
+          },
+        });
+      }
+    );
+    setUploading(false);
+  };
+  
+  const [folderName, setFolderName] = useState<string>('');3
+  const [folderModalOpen, setFolderModalOpen] = useState<boolean>(false);
+  const [creatingFolder, setCreatingFolder] = useState<boolean>(false);
+  const [uploading, setUploading] = useState<boolean>(false);
+
+  const handleCreateFolder = async () => {
+    if(!folderName.trim()){
+      toast.error("Please enter a valid folder name.", {
+        style: {
+          background: "#fee2e2", 
+          color: "#b91c1c",        
+          border: "1px solid #fecaca",
+          borderRadius: "8px",
+          fontWeight: 500,
+        },
+      });
+      return;
+    }
+    setCreatingFolder(true)
+
+    await asyncHandlerFront(
+      async() => {
+        await apiClient.createFolder({
+          name: folderName.trim(),
+          userId,
+          parentId: currentFolder, 
+        });
+        toast.success("Folder created successfully", {
+          style: {
+            background: "#4ade80",
+            color: "#064e3b",
+            borderRadius: "8px",
+          },
+        });
+        setFolderName("");
+        setFolderModalOpen(false);
+
+        if(onUploadSuccess){
+          onUploadSuccess()
+        };
+      },
+      (error) => {
+        toast.error(error?.message || "Something went wrong", {
+          style: {
+            background: "#fee2e2", 
+            color: "#b91c1c",        
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+            fontWeight: 500,
+          },
+        });
+      }
+    );
+    setCreatingFolder(false);
+  };
+
   return (
     <div className="space-y-4">
-      {/* Action buttons */}
       <div className="flex gap-2 mb-2">
-        <Button
-          color="primary"
-          variant="flat"
-          startContent={<FolderPlus className="h-4 w-4" />}
-        //   onClick={() => setFolderModalOpen(true)}
-          className="flex-1"
-        >
+        <Button color="primary" variant="flat" startContent={<FolderPlus className="h-4 w-4" />} className="flex-1"
+          onClick={() => setFolderModalOpen(true)} >
           New Folder
         </Button>
-        <Button
-          color="primary"
-          variant="flat"
-          startContent={<FileUp className="h-4 w-4" />}
-        //   onClick={() => fileInputRef.current?.click()}
-          className="flex-1"
-        >
+        <Button color="primary" variant="flat" startContent={<FileUp className="h-4 w-4" />} className="flex-1"
+          onClick={() => fileInputRef.current?.click()} >
           Add Image
         </Button>
       </div>
         
       {/* File drop area */}
       <div
-        // onDrop={handleDrop}
-        // onDragOver={handleDragOver}
-        // className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-        //   error
-        //     ? "border-danger/30 bg-danger/5"
-        //     : file
-        //       ? "border-primary/30 bg-primary/5"
-        //       : "border-default-300 hover:border-primary/5"
-        // }`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+          error
+            ? "border-danger/30 bg-danger/5"
+            : file
+              ? "border-primary/30 bg-primary/5"
+              : "border-default-300 hover:border-primary/5"
+        }`}
       >
-        {/* {!file ? ( */}
+        {!file ? (
           <div className="space-y-3">
             <FileUp className="h-12 w-12 mx-auto text-primary/70" />
             <div>
-              <p className="text-default-600">
-                Drag and drop your image here, or{" "}
-                <button
-                  type="button"
-                //   onClick={() => fileInputRef.current?.click()}
-                  className="text-primary cursor-pointer font-medium inline bg-transparent border-0 p-0 m-0"
-                >
+              <p className="text-default-600"> Drag and drop your image here, or{" "}
+                <button type="button" className="text-primary cursor-pointer font-medium inline bg-transparent border-0 p-0 m-0"
+                  onClick={() => fileInputRef.current?.click()} >
                   browse
                 </button>
               </p>
@@ -59,18 +205,58 @@ export default function FileUploadForm() {
             </div>
             <Input
               type="file"
-            //   ref={fileInputRef}
-            //   onChange={handleFileChange}
+              ref={fileInputRef}
+              onChange={handleFileChange}
               className="hidden"
               accept="image/*"
             />
           </div>
-        {/* ) : ( */}
-          {/* <d/iv> */}
-        {/* )} */}
+         ) : 
+         (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-primary/10 rounded-md"> <FileUp className="h-5 w-5 text-primary" /> </div>
+                <div className="text-left">
+                  <p className="text-sm font-medium truncate max-w-[180px]"> {file.name} </p>
+                  <p className="text-xs text-default-500">
+                    {file.size < 1024
+                      ? `${file.size} B`
+                      : file.size < 1024 * 1024
+                        ? `${(file.size / 1024).toFixed(1)} KB`
+                        : `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+                    }
+                  </p>
+                </div>
+                <Button isIconOnly variant="light" size="sm" className="text-default-500" onClick={clearFile}> <X className="h-4 w-4" /> </Button>
+              </div>
+
+              {error && (
+                <div className="bg-danger-5 text-danger-700 p-3 rounded-lg flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="text-sm">{error}</span>
+                </div>
+              )}
+
+              {uploading && (
+                <Progress
+                  value={progress}
+                  color="primary"
+                  size="sm"
+                  showValueLabel={true}
+                  className="max-w-full"
+                />
+              )}
+
+              <Button color="primary" startContent={<Upload className="h-4 w-4" />} endContent={!uploading && <ArrowRight 
+                className="h-4 w-4" />} className="w-full" isLoading={uploading} isDisabled={!!error} onClick={handleUpload}>
+                {uploading ? `Uploading... ${progress}%` : "Upload Image"}
+              </Button>
+            </div>
+          </div>
+         )}
       </div>
 
-      {/* Upload tips */}
       <div className="bg-default-100/5 p-4 rounded-lg">
         <h4 className="text-sm font-medium mb-2">Tips</h4>
         <ul className="text-xs text-default-600 space-y-1">
@@ -82,8 +268,8 @@ export default function FileUploadForm() {
 
       {/* Create Folder Modal */}
       <Modal
-        // isOpen={folderModalOpen}
-        // onOpenChange={setFolderModalOpen}
+        isOpen={folderModalOpen}
+        onOpenChange={setFolderModalOpen}
         backdrop="blur"
         classNames={{
           base: "border border-default-200 bg-default-5",
@@ -105,8 +291,8 @@ export default function FileUploadForm() {
                 type="text"
                 label="Folder Name"
                 placeholder="My Images"
-                // value={folderName}
-                // onChange={(e) => setFolderName(e.target.value)}
+                value={folderName}
+                onChange={(e) => setFolderName(e.target.value)}
                 autoFocus
               />
             </div>
@@ -115,16 +301,16 @@ export default function FileUploadForm() {
             <Button
               variant="flat"
               color="default"
-            //   onClick={() => setFolderModalOpen(false)}
+              onClick={() => setFolderModalOpen(false)}
             >
               Cancel
             </Button>
             <Button
               color="primary"
-            //   onClick={handleCreateFolder}
-            //   isLoading={creatingFolder}
-            //   isDisabled={!folderName.trim()}
-            //   endContent={!creatingFolder && <ArrowRight className="h-4 w-4" />}
+              onClick={handleCreateFolder}
+              isLoading={creatingFolder}
+              isDisabled={!folderName.trim()}
+              endContent={!folderName && <ArrowRight className="h-4 w-4" />}
             >
               Create
             </Button>

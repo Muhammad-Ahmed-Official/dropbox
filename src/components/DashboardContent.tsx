@@ -18,9 +18,15 @@ export default function DashboardContent() {
     setRefreshTrigger((prev) => prev + 1 );
   }, []);
 
+
+  const handleFolderChange = () => useCallback((folderId:string | null) => {
+    setCurrentFolder(folderId)
+  }, [])
+
   const { currentUser } = useUserContext();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
+  // console.log(currentUser)
 
   useEffect(() => {
     if (tabParam === "profile") {
@@ -91,9 +97,9 @@ export default function DashboardContent() {
                 </CardHeader>
                 <CardBody>
                   <FileList
-                    // userId={userId}
-                    // refreshTrigger={refreshTrigger}
-                    // onFolderChange={handleFolderChange}
+                    userId={currentUser?.id!}
+                    refreshTrigger={refreshTrigger}
+                    onFolderChange={handleFolderChange}
                   />
                 </CardBody>
               </Card>

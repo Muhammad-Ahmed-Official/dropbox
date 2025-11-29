@@ -61,8 +61,8 @@ class ApiClient {
     };
 
 
-    async getFiles(){
-        return this.fetch("files")
+    async getFiles(userId:string){
+        return this.fetch(`files?userId=${userId}`)
     };
 
 

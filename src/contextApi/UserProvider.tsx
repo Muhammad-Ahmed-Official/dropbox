@@ -28,7 +28,7 @@ const UserContext = createContext<UserContextType>({
 
 export function UserProvider({children}: {children:ReactNode}) {
   const {user, isLoaded, isSignedIn} = useUser()
-  const [currentUser, setCurrentUser] = useState<SerializedUser>(null)
+  const [currentUser, setCurrentUser] = useState<SerializedUser>(null);
   useEffect(() => {
     if(isLoaded && user){
       setCurrentUser({

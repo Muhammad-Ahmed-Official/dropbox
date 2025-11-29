@@ -1,25 +1,34 @@
 import { Button } from '@heroui/button'
-import { Download, X } from 'lucide-react'
+import { ArrowUpFromLine, Download, Star, Trash, X } from 'lucide-react'
 import React from 'react'
+import type { File as FileType } from "@/lib/db/schema";
 
-export default function FileActions() {
+interface FileActionProp {
+  file: FileType;
+  onStar: (id: string) => void;
+  onTrash: (id:string) => void;
+  onDelete: (file: FileType) => void;
+  onDownload: (file: FileType) => void
+}
+
+export default function FileActions({file, onTrash, onDelete, onDownload, onStar}: FileActionProp) {
   return (
      <div className="flex flex-wrap gap-2 justify-end">
       {/* Download button */}
-      {/* {!file.isTrash && !file.isFolder && ( */}
+      {!file.isTrash && !file.isFolder && (
         <Button
           variant="flat"
           size="sm"
-        //   onClick={() => onDownload(file)}
+          onClick={() => onDownload(file)}
           className="min-w-0 px-2"
           startContent={<Download className="h-4 w-4" />}
         >
           <span className="hidden sm:inline">Download</span>
         </Button>
-      {/* )} */}
+      )}
 
       {/* Star button */}
-      {/* {!file.isTrash && (
+      {!file.isTrash && (
         <Button
           variant="flat"
           size="sm"
@@ -39,10 +48,10 @@ export default function FileActions() {
             {file.isStarred ? "Unstar" : "Star"}
           </span>
         </Button>
-      )} */}
+      )}
 
       {/* Trash/Restore button */}
-      {/* <Button
+      <Button
         variant="flat"
         size="sm"
         onClick={() => onTrash(file.id)}
@@ -59,21 +68,21 @@ export default function FileActions() {
         <span className="hidden sm:inline">
           {file.isTrash ? "Restore" : "Delete"}
         </span>
-      </Button> */}
+      </Button>
 
       {/* Delete permanently button */}
-      {/* {file.isTrash && ( */}
+      {file.isTrash && (
         <Button
           variant="flat"
           size="sm"
           color="danger"
-        //   onClick={() => onDelete(file)}
+          onClick={() => onDelete(file)}
           className="min-w-0 px-2"
           startContent={<X className="h-4 w-4" />}
         >
           <span className="hidden sm:inline">Remove</span>
         </Button>
-      {/* )} */}
+      )}
     </div>
   )
 }

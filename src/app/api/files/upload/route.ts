@@ -17,12 +17,12 @@ const imageKit = new ImageKit({
 export const POST = asyncHandler(async (request:NextRequest):Promise<NextResponse> => {
     const { userId } = await auth();
     if(!userId) return nextError(401, "Unauthrorized");
-
     // parse form data
     const formData = await request.formData();
-    const file = formData.get("file") as File
-    const formUserId = formData.get("userId") as string
-    const parentId =  formData.get("parentId") as string || null
+    const file = (formData.get("file") as File)
+    const formUserId = (formData.get("userId") as string)
+    const parentId =  (formData.get("parentId") as string) || null
+    // console.log(parentId)
 
     if(userId !== formUserId) return nextError(401, "Unauthorized");
     
@@ -32,8 +32,12 @@ export const POST = asyncHandler(async (request:NextRequest):Promise<NextRespons
         const [parentFolder] = await db.select().from(files).where(and(
             eq(files.id, parentId), eq(files.userId, userId), eq(files.isFolder, true) 
         ))
-    } else {
-        return nextError(400, "No parent folder found");
+        if (!parentFolder) {
+            return NextResponse.json(
+            { error: "Parent folder not found" },
+            { status: 404 }
+            );
+        }
     }
 
     if(!file.type.startsWith("image/") && file.type !== "application/pdf") return nextError(400, "Invalid file format only image & pdf allow");
@@ -54,7 +58,7 @@ export const POST = asyncHandler(async (request:NextRequest):Promise<NextRespons
     });
 
     const fileData = {
-        id: uploadResponse.fileId,
+        // id: uploadResponse.fileId,
         name: file?.name,
         path: uploadResponse.filePath,
         size: file.size,
@@ -67,6 +71,7 @@ export const POST = asyncHandler(async (request:NextRequest):Promise<NextRespons
         isStarred: false,
         isTrash: false,
     }
+    console.log(fileData)
 
     const [NewFile] = await db.insert(files).values(fileData).returning()
     return nextResponse(200, "file upload successfully");

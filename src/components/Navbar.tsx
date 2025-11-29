@@ -12,11 +12,10 @@ import { useUserContext } from "@/contextApi/UserProvider";
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
+  // const isOnDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
   const { signOut } = useClerk();
-  const { currentUser } = useUserContext();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const isOnDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
+  const { currentUser, isLoaded } = useUserContext();
 
   const userDetails = {
     fullName: currentUser

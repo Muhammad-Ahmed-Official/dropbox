@@ -49,7 +49,7 @@ export const DELETE = asyncHandler(async (request:NextRequest, context: { params
                 }
 
                 const foundFile = files[0];
-                await imageKit.deleteFile(foundFile.fileId);
+                await imageKit.deleteFile(foundFile?.fileId);
             }
         }
 
@@ -79,7 +79,6 @@ export const DELETE = asyncHandler(async (request:NextRequest, context: { params
         }
 
         const foundFile = files[0];
-
         await imageKit.deleteFile(foundFile?.fileId);
     }
 

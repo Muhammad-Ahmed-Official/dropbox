@@ -17,7 +17,7 @@ import { Mail, Lock, CheckCircle, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { apiClient } from "@/lib/api-client";
 
-export default function SignUpForm() {
+export function SignUpForm() {
     const [verifying, setVerifying] = useState<Boolean>(false);
     const {signUp, isLoaded, setActive} = useSignUp();
     const [verificationCode, setVerificationCode] = useState("");

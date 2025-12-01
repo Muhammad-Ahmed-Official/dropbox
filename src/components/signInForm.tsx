@@ -8,7 +8,6 @@ import { Card, CardBody, CardFooter, CardHeader } from '@heroui/card'
 import { Divider } from '@heroui/divider'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
@@ -16,10 +15,8 @@ import { Mail, Lock,  Eye, EyeOff } from "lucide-react";
 import { Input } from '@heroui/input'
 import toast from 'react-hot-toast'
 
-export default function SignInForm() {
-    const router = useRouter();
+export function SignInForm() {
     const { signIn, isLoaded, setActive } = useSignIn();
-    // const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: {errors, isLoading} } = useForm<z.infer<typeof signInSchema>>({
         resolver: zodResolver(signInSchema),

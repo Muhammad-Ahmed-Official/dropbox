@@ -16,7 +16,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import ConfirmationModal from './ui/ConfirmationModal';
 
 interface FilePropList {
-  userId: string;
+  userId: any;
   refreshTrigger?: number;
   onFolderChange?: (folderId: string | null) => void;
 }

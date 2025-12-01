@@ -94,7 +94,7 @@ export default function DashboardContent() {
                 </CardHeader>
                 <CardBody>
                   <FileList
-                    userId={currentUser?.id ?? ""}
+                    userId={currentUser?.id}
                     refreshTrigger={refreshTrigger}
                     onFolderChange={handleFolderChange}
                   />

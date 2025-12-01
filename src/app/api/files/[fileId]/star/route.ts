@@ -6,11 +6,11 @@ import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-export const PATCH = asyncHandler(async (request:NextRequest, { params }: any):Promise<NextResponse> => {
+export const PATCH = asyncHandler(async (request:NextRequest, context: { params: { fileId: string}}):Promise<NextResponse> => {
     const { userId } = await auth();
     if(!userId) return nextError(401, "Unauthrorized");
 
-    const fileId = params.fileId;
+     const { fileId } = await context.params;
     if(!fileId) return nextError(400, "Params is empty");
 
     const [file] = await db.select().from(files).where(and(

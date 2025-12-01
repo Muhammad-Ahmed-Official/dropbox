@@ -1,5 +1,3 @@
-import { object } from "zod";
-
 type FetchOptions = {
     method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     body?: any;
@@ -14,7 +12,6 @@ class ApiClient {
   let finalBody = body;
 
   if (!(body instanceof FormData)) {
-    // Only set Content-Type for JSON requests
     finalHeaders["Content-Type"] = "application/json";
     finalBody = body ? JSON.stringify(body) : undefined;
   }
@@ -51,14 +48,6 @@ class ApiClient {
             body: data
         })
     };
-
-
-    // async uploadparent(data:object){
-    //     return this.fetch("files/upload", {
-    //         method: "POST",
-    //         body: data
-    //     })
-    // };
 
 
     async getFiles(params: { userId: string; parentId?: string }) {

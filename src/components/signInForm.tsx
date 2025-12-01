@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
-import { Mail, Lock, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock,  Eye, EyeOff } from "lucide-react";
 import { Input } from '@heroui/input'
 import toast from 'react-hot-toast'
 

@@ -13,11 +13,9 @@ import {Card, CardHeader, CardBody, CardFooter} from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { Mail, Lock, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, CheckCircle, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { apiClient } from "@/lib/api-client";
-// const [isSubmitting, setIsSubmitting] = useState(false);   
-// const [authError, setAuthError] = useState<string | null>();
 
 export default function SignUpForm() {
     const [verifying, setVerifying] = useState<Boolean>(false);

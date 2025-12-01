@@ -6,16 +6,14 @@ import { ChevronDown, CloudUpload, Menu, X } from "lucide-react";
 import { Avatar,Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useUserContext } from "@/contextApi/UserProvider";
 
 export default function Navbar() {
   const router = useRouter();
-  const pathname = usePathname();
-  // const isOnDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
   const { signOut } = useClerk();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { currentUser, isLoaded } = useUserContext();
+  const { currentUser } = useUserContext();
 
   const userDetails = {
     fullName: currentUser
@@ -60,14 +58,6 @@ export default function Navbar() {
       </SignedOut>
 
       <SignedIn>
-        {/* {!isOnDashboard && (
-          <Link href="/dashboard">
-            <Button color="primary" variant="flat" fullWidth>
-              Dashboard
-            </Button>
-          </Link>
-        )} */}
-
         <Button
           onClick={() => router.push("/dashboard?tab=profile")}
           variant="flat"

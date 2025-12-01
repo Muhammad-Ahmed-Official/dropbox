@@ -2,10 +2,7 @@ import { ReactNode } from "react"
 import type { ThemeProviderProps } from "next-themes"
 import { ImageKitProvider } from "@imagekit/next"
 import { Toaster } from "react-hot-toast";
-import {HeroUIProvider} from '@heroui/react'
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 
-// remove upload-imagekit authauth
 export interface ProviderProps {
     children: ReactNode,
     themeProp?: ThemeProviderProps,
@@ -21,6 +18,3 @@ export default function Providers({children, themeProp}:ProviderProps) {
     </ImageKitProvider>
   )
 }
-
-{/* <NextThemesProvider attribute="class" defaultTheme="dark"> */}
-{/* </NextThemesProvider> */}

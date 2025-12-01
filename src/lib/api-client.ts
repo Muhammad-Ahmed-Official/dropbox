@@ -42,7 +42,7 @@ class ApiClient {
     };
 
 
-    async uploadFile(data:object, config?: any){
+    async uploadFile(data:object){
         return this.fetch("files/upload", {
             method: "POST",
             body: data

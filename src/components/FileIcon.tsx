@@ -3,8 +3,6 @@
 import React from 'react'
 import type { File as FileType } from "@/lib/db/schema";
 import { FileText, Folder } from 'lucide-react';
-import { IKImage } from "imagekitio-next";
-import Image from 'next/image';
 
 interface FileProp {
   file: FileType

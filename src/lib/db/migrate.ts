@@ -1,7 +1,6 @@
 import { migrate } from 'drizzle-orm/neon-http/migrator';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import * as dotenv from "dotenv";
 
 if(!process.env?.DATABASE_URL) throw new Error("Datebase url missing in enviroment");
 

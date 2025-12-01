@@ -58,8 +58,6 @@ export function SignUpForm() {
     const handleVerificationSubmit = async(e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if(!isLoaded && !signUp) return;
-        // setIsSubmitting(false);
-        // setIsSubmitting(false);
         await asyncHandlerFront(
             async() => {
                 const result = await signUp.attemptEmailAddressVerification({
@@ -109,7 +107,7 @@ export function SignUpForm() {
                 </form>
 
                 <div className="mt-6 text-center">
-                    <p className="text-sm text-default-500"> Didn't receive a code?{" "}
+                    <p className="text-sm text-default-500"> Didn't receive a code?
                     <button
                         onClick={ async () => {
                             if (signUp) await signUp.prepareEmailAddressVerification({ strategy: "email_code", });
@@ -227,7 +225,7 @@ export function SignUpForm() {
             <Divider />
 
             <CardFooter className="flex justify-center py-4">
-                <p className="text-sm text-default-600">Already have an account?{" "}
+                <p className="text-sm text-default-600">Already have an account?
                     <Link href="/sign-in" className="text-[#046fee] hover:underline font-medium"> Sign in </Link>
                 </p>
             </CardFooter>

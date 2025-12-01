@@ -13,6 +13,11 @@ const imageKit = new ImageKit({
     urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT || "",
 })
 
+type ImageKitFile = {
+  fileId: string;
+  name: string;
+  url: string;
+};
 
 export const DELETE = asyncHandler(async (request:NextRequest, context: { params: { fileId: string}}):Promise<NextResponse> => {
     const {userId} = await auth();
@@ -48,7 +53,7 @@ export const DELETE = asyncHandler(async (request:NextRequest, context: { params
                     throw new Error("File not found in ImageKit");
                 }
 
-                const foundFile = files[0];
+                const foundFile = files[0] as ImageKitFile;
                 await imageKit.deleteFile(foundFile?.fileId);
             }
         }
@@ -78,7 +83,7 @@ export const DELETE = asyncHandler(async (request:NextRequest, context: { params
             throw new Error("File not found in ImageKit");
         }
 
-        const foundFile = files[0];
+        const foundFile = files[0] as ImageKitFile;
         await imageKit.deleteFile(foundFile?.fileId);
     }
 

@@ -13,6 +13,7 @@ const imageKit = new ImageKit({
     urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT || "",
 })
 
+
 export const DELETE = asyncHandler(async (request:NextRequest):Promise<NextResponse> => {
     const {userId} = await auth();
     if(!userId) return nextError(401, "Unauthorized");

@@ -18,7 +18,7 @@ import Link from "next/link";
 import { apiClient } from "@/lib/api-client";
 
 export function SignUpForm() {
-    const [verifying, setVerifying] = useState<Boolean>(false);
+    const [verifying, setVerifying] = useState<boolean>(false);
     const {signUp, isLoaded, setActive} = useSignUp();
     const [verificationCode, setVerificationCode] = useState("");
     const [showPassword, setShowPassword] = useState(false);

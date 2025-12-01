@@ -78,7 +78,7 @@ export default function DashboardContent() {
                 </CardHeader>
                 <CardBody>
                   <FileUploadForm
-                    userId={currentUser?.id!}
+                    userId={currentUser?.id}
                     onUploadSuccess={handleFileUploadSuccess}
                     currentFolder={currentFolder}
                   />

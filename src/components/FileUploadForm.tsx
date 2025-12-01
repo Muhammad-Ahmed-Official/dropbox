@@ -8,7 +8,7 @@ import React, { useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 interface FileUploadFormProps {
-  userId: string,
+  userId: any,
   currentFolder: string | null,
   onUploadSuccess: () => void
 }

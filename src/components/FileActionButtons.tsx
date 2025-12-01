@@ -7,17 +7,17 @@ interface FileActionButtonsProp {
   trashCount: number;
   onRefresh: () => void;
   onEmptyTrash: () => void;
+  folderPath: Array<{id: string; name: string}>
 }
 
-export default function FileActionButtons({activeTab, trashCount, onRefresh, onEmptyTrash}: FileActionButtonsProp) {
+export default function FileActionButtons({activeTab, trashCount, onRefresh, onEmptyTrash, folderPath}: FileActionButtonsProp) {
   return (
      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
       <h2 className="text-xl sm:text-2xl font-semibold truncate max-w-full">
-        All Files
-        {/* {activeTab === "all" &&
+        {activeTab === "all" &&
           (folderPath.length > 0
             ? folderPath[folderPath.length - 1].name
-            : "All Files")} */}
+            : "All Files")}
         {activeTab === "starred" && "Starred Files"}
         {activeTab === "trash" && "Trash"}
       </h2>

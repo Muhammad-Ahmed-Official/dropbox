@@ -10,7 +10,7 @@ import { Divider } from "@heroui/divider";
 import { useRouter } from "next/navigation";
 import { Mail, User, LogOut, Shield, ArrowRight} from "lucide-react";
 import { useUserContext } from '@/contextApi/UserProvider';
-import { Badge } from '@heroui/react';
+import Badge from './ui/Badge';
 
 export default function UserProfile() {
   const { signOut } = useClerk();
@@ -24,6 +24,7 @@ export default function UserProfile() {
     .map((name) => name[0])
     .join("")
     .toUpperCase();
+
 
   if (!isLoaded) {
     return (
@@ -93,7 +94,8 @@ export default function UserProfile() {
           {currentUser?.emailAddress && currentUser?.emailAddress.length > 0 && (
             <div className="flex items-center gap-2 mt-1 text-default-500">
               <Mail className="h-4 w-4" />
-              <span>{email}</span>
+              {/* <span>{email}</span> */}
+              <span>User</span>
             </div>
           )}
           {userRole && (
@@ -118,8 +120,8 @@ export default function UserProfile() {
             </div>
             <Badge  
               variant="flat"
-              color='success'
               aria-label="Account status: Active"
+              color={ currentUser?.status === "verified" ? "success" : "warning" }
             >
               Active
             </Badge>

@@ -2,27 +2,32 @@ import { Button } from '@heroui/button'
 import { ArrowUpFromLine } from 'lucide-react'
 import React from 'react'
 
-export default function FolderNavigation() {
+interface FolderNavigationProps {
+  folderPath: Array<{ id: string; name: string }>;
+  navigateUp: () => void;
+  navigateToPathFolder: (index:number) => void;
+}
+
+export default function FolderNavigation({ folderPath, navigateUp, navigateToPathFolder } : FolderNavigationProps) {
   return (
       <div className="flex flex-wrap items-center gap-2 text-sm overflow-x-auto pb-2">
       <Button
         variant="flat"
         size="sm"
         isIconOnly
-        // onClick={navigateUp}
-        // isDisabled={folderPath.length === 0}
+        onClick={navigateUp}
+        isDisabled={folderPath.length === 0}
       >
         <ArrowUpFromLine className="h-4 w-4" />
       </Button>
       <Button
-        // variant="flat"
-        // size="sm"
-        // onClick={() => navigateToPathFolder(-1)}
-        // className={folderPath.length === 0 ? "font-bold" : ""}
-      >
+        variant="flat"
+        size="sm"
+        onClick={() => navigateToPathFolder(-1)}
+        className={folderPath.length === 0 ? "font-bold" : ""}>
         Home
       </Button>
-      {/* {folderPath.map((folder, index) => (
+      {folderPath.map((folder, index) => (
         <div key={folder.id} className="flex items-center">
           <span className="mx-1 text-default-400">/</span>
           <Button
@@ -35,7 +40,7 @@ export default function FolderNavigation() {
             {folder.name}
           </Button>
         </div>
-      ))} */}
+      ))}
     </div>
   )
 }

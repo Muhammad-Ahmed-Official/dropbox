@@ -1,7 +1,8 @@
 import { File, Star, Trash } from 'lucide-react'
 import React from 'react'
 import type { File as FileType } from "@/lib/db/schema";
-import { Badge, Tab, Tabs } from '@heroui/react';
+import { Tab, Tabs } from '@heroui/react';
+import Badge from './ui/Badge';
 
 interface FileTabProp {
   files: FileType[];
@@ -16,19 +17,18 @@ export default function FileTabs({files, starredCount, trashCount, activeTab, on
      <Tabs
       selectedKey={activeTab}
       onSelectionChange={(key) => onTabChange(key as string)}
-      color="primary"
       variant="underlined"
       classNames={{
         base: "w-full overflow-x-auto",
         tabList: "gap-2 sm:gap-4 md:gap-6 flex-nowrap min-w-full",
         tab: "py-3 whitespace-nowrap",
-        cursor: "bg-primary",
+        cursor: "bg-[#006fee]",
       }}
     >
       <Tab
         key="all"
         title={
-          <div className="flex items-center gap-2 sm:gap-3">
+           <div className={`flex items-center gap-2 sm:gap-3 ${activeTab === 'all' ? 'text-[#006fee] font-semibold' : 'text-gray-500'}`}>
             <File className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="font-medium">All Files</span>
             <Badge
@@ -45,7 +45,7 @@ export default function FileTabs({files, starredCount, trashCount, activeTab, on
       <Tab
         key="starred"
         title={
-          <div className="flex items-center gap-2 sm:gap-3">
+           <div className={`flex items-center gap-2 sm:gap-3 ${activeTab === 'starred' ? 'text-[#006fee] font-semibold' : 'text-gray-500'}`}>
             <Star className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="font-medium">Starred</span>
             <Badge
@@ -62,7 +62,7 @@ export default function FileTabs({files, starredCount, trashCount, activeTab, on
       <Tab
         key="trash"
         title={
-          <div className="flex items-center gap-2 sm:gap-3">
+           <div className={`flex items-center gap-2 sm:gap-3 ${activeTab === 'trash' ? 'text-[#006fee] font-semibold' : 'text-gray-500'}`}>
             <Trash className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="font-medium">Trash</span>
             <Badge

@@ -47,7 +47,7 @@ export default function SignInForm() {
     };
 
   return (
-    <Card className="w-full max-w-md border border-default-200 p-4 bg-default-50 shadow-xl">
+    <Card className="w-full max-w-md border border-default-200 p-4 bg-default-50 shadow-xl ">
       <CardHeader className="flex flex-col gap-1 items-center pb-2">
         <h1 className="text-2xl font-bold text-default-900">Welcome Back</h1>
         <p className="text-default-500 text-center"> Sign in to access your secure cloud storage </p>
@@ -103,7 +103,7 @@ export default function SignInForm() {
             />
           </div>
 
-          <Button type="submit" color="primary" className="w-full" isLoading={isLoading}>
+          <Button type="submit" color="primary" className="w-full bg-[#006fee] text-white" variant="flat" isLoading={isLoading}>
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
@@ -114,7 +114,7 @@ export default function SignInForm() {
       <CardFooter className="flex justify-center py-4">
         <p className="text-sm text-default-600">
           Don't have an account?{" "}
-          <Link href="/sign-up" className="text-primary hover:underline font-medium"> Sign up </Link>
+          <Link href="/sign-up" className="text-[#046fee] hover:underline font-medium"> Sign up </Link>
         </p>
       </CardFooter>
     </Card>

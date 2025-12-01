@@ -6,13 +6,11 @@ import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-export const PATCH = asyncHandler(async (request:NextRequest):Promise<NextResponse> => {
+export const PATCH = asyncHandler(async (request:NextRequest, { params }: any):Promise<NextResponse> => {
     const { userId } = await auth();
     if(!userId) return nextError(401, "Unauthrorized");
 
-    const url = new URL(request.url);
-    const fileId = url.searchParams.get("id") 
-
+    const fileId = params.fileId;
     if(!fileId) return nextError(400, "Params is empty");
 
     const [file] = await db.select().from(files).where(and(
@@ -23,11 +21,9 @@ export const PATCH = asyncHandler(async (request:NextRequest):Promise<NextRespon
     // toggle the status
     const updatedFiles = await db
         .update(files)
-        .set({isStarred: !files?.isStarred})
+        .set({isStarred: !file.isStarred})
         .where(and(eq(files.id, fileId), eq(files.userId, userId)))
         .returning()
 
-    const updatedFile = updatedFiles[0];
-
-    return nextResponse(200, "File starred successfully")
+    return nextResponse(200, "File starred successfully", updatedFiles[0])
 })

@@ -13,12 +13,12 @@ const imageKit = new ImageKit({
     urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT || "",
 })
 
-export const DELETE = asyncHandler(async (request:NextRequest):Promise<NextResponse> => {
+
+export const DELETE = asyncHandler(async (request:NextRequest, context: { params: { fileId: string}}):Promise<NextResponse> => {
     const {userId} = await auth();
     if(!userId) return nextError(401, "Unauthorized");
-
-    const url = new URL(request.url);
-    const fileId = url.searchParams.get("id") 
+    
+    const { fileId } = await context.params;
     if(!fileId) return nextError(400, "Params is empty");
     
     const [file] = await db.select().from(files).where(and(
@@ -30,19 +30,59 @@ export const DELETE = asyncHandler(async (request:NextRequest):Promise<NextRespo
         const childFiles = await db
             .select()
             .from(files)
-            .where(and(eq(files?.id, fileId), eq(files?.userId, userId)));
+            .where(and(eq(files.parentId, fileId), eq(files?.userId, userId)));
 
-            for(const child of childFiles){
-                await imageKit.deleteFile(child?.id);
+        for(const child of childFiles){
+            if (!child.isFolder && child.path) {
+                const lastSlash = child.path.lastIndexOf("/");
+                const folderPath = child.path.substring(0, lastSlash); 
+                const fileName = child.path.substring(lastSlash + 1);   
+                const files = await imageKit.listFiles({
+                    searchQuery: `name="${fileName}"`,
+                    path: folderPath,
+                    limit: 1,
+                });
+
+                if (!files.length) {
+                    console.log("No file found in ImageKit:", folderPath, fileName);
+                    throw new Error("File not found in ImageKit");
+                }
+
+                const foundFile = files[0];
+                await imageKit.deleteFile(foundFile.fileId);
             }
+        }
 
-            await db.delete(files).where(and(
-                eq(files?.parentId, fileId), eq(files?.userId, userId)
-            ));
-            return nextResponse(200, "File deleted successfully");
+        await db.delete(files).where(and(
+            eq(files?.parentId, fileId), eq(files?.userId, userId)
+        ));
+
+        await db.delete(files).where(
+            and(eq(files.id, fileId), eq(files.userId, userId))
+        );
+        return nextResponse(200, "File deleted successfully");
     };
 
-    await imageKit.deleteFile(file?.id);
+    if (!file.isFolder && file.path) {
+        const lastSlash = file.path.lastIndexOf("/");
+        const folderPath = file.path.substring(0, lastSlash); 
+        const fileName = file.path.substring(lastSlash + 1);   
+        const files = await imageKit.listFiles({
+            searchQuery: `name="${fileName}"`,
+            path: folderPath,
+            limit: 1,
+        });
+
+        if (!files.length) {
+            console.log("No file found in ImageKit:", folderPath, fileName);
+            throw new Error("File not found in ImageKit");
+        }
+
+        const foundFile = files[0];
+
+        await imageKit.deleteFile(foundFile.fileId);
+    }
+
     await db.delete(files).where(and(
         eq(files?.id, fileId), eq(files?.userId, userId)
     ));

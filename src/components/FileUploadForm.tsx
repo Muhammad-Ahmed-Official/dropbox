@@ -82,10 +82,13 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
         });
          toast.success("File upload successfully", {
           style: {
-            background: "#4ade80",
-            color: "#064e3b",
-            borderRadius: "8px",
-          },
+            background: "#f0fdf4",    
+            color: "#166534",          
+            borderRadius: "10px",
+            border: "1px solid #bbf7d0",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            fontWeight: "500"
+          }
         });
 
         clearFile();
@@ -137,11 +140,14 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
           parentId: currentFolder, 
         });
         toast.success("Folder created successfully", {
-          style: {
-            background: "#4ade80",
-            color: "#064e3b",
-            borderRadius: "8px",
-          },
+         style: {
+            background: "#f0fdf4",    
+            color: "#166534",          
+            borderRadius: "10px",
+            border: "1px solid #bbf7d0",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            fontWeight: "500"
+          }
         });
         setFolderName("");
         setFolderModalOpen(false);
@@ -168,11 +174,11 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
   return (
     <div className="space-y-4">
       <div className="flex gap-2 mb-2">
-        <Button color="primary" variant="flat" startContent={<FolderPlus className="h-4 w-4" />} className="flex-1"
+        <Button variant="flat" startContent={<FolderPlus className="h-4 w-4" />} className="text-[#006fee] bg-[#132946] flex-1"
           onClick={() => setFolderModalOpen(true)} >
           New Folder
         </Button>
-        <Button color="primary" variant="flat" startContent={<FileUp className="h-4 w-4" />} className="flex-1"
+        <Button variant="flat" startContent={<FileUp className="h-4 w-4" />} className="text-[#006fee] bg-[#132946] flex-1"
           onClick={() => fileInputRef.current?.click()} >
           Add Image
         </Button>
@@ -186,16 +192,16 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
           error
             ? "border-danger/30 bg-danger/5"
             : file
-              ? "border-primary/30 bg-primary/5"
+              ? "border-[#103662] bg-[#171d26]"
               : "border-default-300 hover:border-primary/5"
         }`}
       >
         {!file ? (
           <div className="space-y-3">
-            <FileUp className="h-12 w-12 mx-auto text-primary/70" />
+            <FileUp className="h-12 w-12 mx-auto text-[#006fee]" />
             <div>
               <p className="text-default-600"> Drag and drop your image here, or{" "}
-                <button type="button" className="text-primary cursor-pointer font-medium inline bg-transparent border-0 p-0 m-0"
+                <button type="button" className="text-[#006fee] cursor-pointer font-medium inline bg-transparent border-0 p-0 m-0"
                   onClick={() => fileInputRef.current?.click()} >
                   browse
                 </button>
@@ -213,19 +219,21 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
          ) : 
          (
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-primary/10 rounded-md"> <FileUp className="h-5 w-5 text-primary" /> </div>
-                <div className="text-left">
-                  <p className="text-sm font-medium truncate max-w-[180px]"> {file.name} </p>
-                  <p className="text-xs text-default-500">
-                    {file.size < 1024
-                      ? `${file.size} B`
-                      : file.size < 1024 * 1024
-                        ? `${(file.size / 1024).toFixed(1)} KB`
-                        : `${(file.size / (1024 * 1024)).toFixed(1)} MB`
-                    }
-                  </p>
+            <div className="items-center justify-between space-y-2">
+              <div className="flex items-center justify-between">
+                <div className='flex space-x-3'>
+                  <div className="p-2 bg-primary/10 rounded-md"> <FileUp className="h-5 w-5 text-[#006fee]" /> </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium truncate max-w-[180px]"> {file.name} </p>
+                    <p className="text-xs text-default-500">
+                      {file.size < 1024
+                        ? `${file.size} B`
+                        : file.size < 1024 * 1024
+                          ? `${(file.size / 1024).toFixed(1)} KB`
+                          : `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+                      }
+                    </p>
+                  </div>
                 </div>
                 <Button isIconOnly variant="light" size="sm" className="text-default-500" onClick={clearFile}> <X className="h-4 w-4" /> </Button>
               </div>
@@ -237,7 +245,7 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
                 </div>
               )}
 
-              {uploading && (
+              {/* {uploading && (
                 <Progress
                   value={progress}
                   color="primary"
@@ -245,11 +253,12 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
                   showValueLabel={true}
                   className="max-w-full"
                 />
-              )}
+                ${progress}%
+              )} */}
 
               <Button color="primary" startContent={<Upload className="h-4 w-4" />} endContent={!uploading && <ArrowRight 
-                className="h-4 w-4" />} className="w-full" isLoading={uploading} isDisabled={!!error} onClick={handleUpload}>
-                {uploading ? `Uploading... ${progress}%` : "Upload Image"}
+                className="h-4 w-4" />} className="w-full bg-[#006fee] text-white" isLoading={uploading} isDisabled={!!error} onClick={handleUpload}>
+                {uploading ? `Uploading...` : "Upload Image"}
               </Button>
             </div>
           </div>
@@ -306,10 +315,11 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
             </Button>
             <Button
               color="primary"
+              className='bg-[#006fee] text-white'
               onClick={handleCreateFolder}
               isLoading={creatingFolder}
               isDisabled={!folderName.trim()}
-              endContent={!folderName && <ArrowRight className="h-4 w-4" />}
+              endContent={!creatingFolder && <ArrowRight className="h-4 w-4" />}
             >
               Create
             </Button>

@@ -53,34 +53,49 @@ class ApiClient {
     };
 
 
-    async uploadparent(data:object){
-        return this.fetch("files/upload", {
-            method: "POST",
-            body: data
-        })
-    };
+    // async uploadparent(data:object){
+    //     return this.fetch("files/upload", {
+    //         method: "POST",
+    //         body: data
+    //     })
+    // };
 
 
-    async getFiles(userId:string){
-        return this.fetch(`files?userId=${userId}`)
-    };
+    async getFiles(params: { userId: string; parentId?: string }) {
+        const { userId, parentId } = params;
+        const url = parentId 
+            ? `files?userId=${userId}&parentId=${parentId}` 
+            : `files?userId=${userId}`;
+
+        return this.fetch(url);
+    }
 
 
-    async starFiles(id:string){
-        return this.fetch(`files/star?id=${id}`, {
+    async starFiles(fileId:string){
+        return this.fetch(`files/${fileId}/star`, {
             method: "PATCH"
         })
     };
 
 
-    async delFiles(id:string){
-        return this.fetch(`files/delete?id=${id}`)
+    async delFiles(fileId:string){
+        return this.fetch(`files/${fileId}/delete`, {
+            method: "DELETE"
+        })
     };
 
-    async trashFile(){
-        return this.fetch("files/trash")
-    }
 
+    async trashFile(fileId:string){
+        return this.fetch(`files/${fileId}/trash`, {
+            method: 'PATCH'
+        })
+    };
+
+
+    async emptyTrash() {
+        return this.fetch(`files/empty-trash`, {
+            method: "DELETE"
+        })
+    };
 }
-
 export const apiClient = new ApiClient();   

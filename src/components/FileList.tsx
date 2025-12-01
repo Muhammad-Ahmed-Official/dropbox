@@ -13,6 +13,7 @@ import { apiClient } from '@/lib/api-client';
 import toast from 'react-hot-toast';
 import type { File as FileType } from "@/lib/db/schema";
 import { formatDistanceToNow, format } from "date-fns";
+import ConfirmationModal from './ui/ConfirmationModal';
 
 interface FilePropList {
   userId: string;
@@ -25,8 +26,9 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
   const [files, setFiles] = useState<FileType[]>([]);
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("all");
+  const [folderPath, setFolderPath] = useState<Array<{id: string; name: string}>>([])
 
-    // Modal states
+  // Modal states
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [emptyTrashModalOpen, setEmptyTrashModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<FileType | null>(null);
@@ -35,15 +37,22 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
     setLoading(true);
     await asyncHandlerFront(
       async() => {
-        const response:any = await apiClient.getFiles(userId);
+        const params: any = { userId };
+        if (currentFolder) {
+          params.parentId = currentFolder;
+        }
+
+        const response: any = await apiClient.getFiles(params);
         setFiles(response?.data)
       },
       (error) => {
-        toast.success(error?.message || "Something went wrong", {
+        toast.error(error?.message || "Something went wrong", {
           style: {
-            background: "#4ade80",
-            color: "#064e3b",
+            background: "#fee2e2", 
+            color: "#b91c1c",        
+            border: "1px solid #fecaca",
             borderRadius: "8px",
+            fontWeight: 500,
           },
         });
       }
@@ -52,21 +61,22 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
   };
 
   useEffect(() => {
-    fetchFiles();
+    userId && fetchFiles();
   }, [userId, currentFolder, refreshTrigger])
 
   const filteredFiles = useMemo(() => {
     switch (activeTab) {
       case 'starred':
-        return;
+        return files.filter((file) =>  file.isStarred && !file.isTrash);
       
       case 'trash':
-        return;
+        return files.filter((file) => file.isTrash);
     
       default:
         return files.filter((file) => !file.isTrash)
     }
   }, [files, activeTab])
+
 
   const starredCount = useMemo(() => {
     return files.filter((file) => file?.isStarred && !file.isTrash).length
@@ -76,22 +86,215 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
     return files.filter((file) => file?.isTrash).length
   }, [files])
 
-  const handleDownloadFile = () => {}
+  const handleDownloadFile = async(file:FileType) => {
+    await asyncHandlerFront(
+      async() => {
+        toast.loading("Downloading...");
+        const response = await fetch(file.fileUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
 
-  const handleTrashFile = () => {}
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name; 
+        document.body.appendChild(a);
+        a.click();
+        // cleanup
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        toast.dismiss(); 
 
-  const handleStarFile = () => {}
+        toast.success("Download Completed!", {
+          style: {
+            background: "#f0fdf4",    
+            color: "#166534",          
+            borderRadius: "10px",
+            border: "1px solid #bbf7d0",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            fontWeight: "500"
+          }
+        });
+      },
+      (error) => {
+        toast.dismiss();
+        toast.error(error?.message || "Something went wrong", {
+          style: {
+            background: "#fee2e2", 
+            color: "#b91c1c",        
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+            fontWeight: 500,
+          },
+        });
+      }
+    )
+  }
 
-  const handleDeleteFile = (id:string) => {}
+  const handleTrashFile = async(fileId: string) => {
+    await asyncHandlerFront(
+      async() => {
+        const responseData:any = await apiClient.trashFile(fileId);
+        setFiles(files.map((file) => file.id === fileId ? {...file, isTrash: !file.isTrash} : file))
+        toast.success(responseData.data.isTrash ? "Moved to Trash" : "Restored from Trash", {
+          style: {
+            background: "#f0fdf4",    
+            color: "#166534",          
+            borderRadius: "10px",
+            border: "1px solid #bbf7d0",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            fontWeight: "500"
+          }
+        });
+      },
+      (error) => {
+        toast.error(error?.message || "Something went wrong", {
+          style: {
+            background: "#fee2e2", 
+            color: "#b91c1c",        
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+            fontWeight: 500,
+          },
+        });
+      }
+    )
+  }
 
-  const handleEmptyTrash = () => {}
+  const handleStarFile = async(fileId:string) => {
+    await asyncHandlerFront(
+      async() => {
+        await apiClient.starFiles(fileId);
+        setFiles(files.map((file) => file?.id === fileId  ? {...file, isStarred: !file.isStarred} : file))
+      },
+      (error) => {
+        toast.error(error?.message || "Something went wrong", {
+          style: {
+            background: "#fee2e2", 
+            color: "#b91c1c",        
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+            fontWeight: 500,
+          },
+        });
+      }
+    )
+  }
+
+  const handleDeleteFile = async(fileId:string) => {
+    await asyncHandlerFront(
+      async() => {
+        await apiClient.delFiles(fileId);
+        setFiles(files.filter((file) => file?.id !== fileId));
+      },
+      (error) => {
+        toast.error(error?.message || "Something went wrong", {
+          style: {
+            background: "#fee2e2", 
+            color: "#b91c1c",        
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+            fontWeight: 500,
+          },
+        });
+      }
+    )
+    setDeleteModalOpen(false);
+  }
+
+  const handleEmptyTrash = async() => {
+    await asyncHandlerFront(
+      async() => {
+        await apiClient.emptyTrash()
+        setFiles(files.filter((file) => !file.isTrash))
+        toast.success("Folder created successfully", {
+        style: {
+            background: "#f0fdf4",    
+            color: "#166534",          
+            borderRadius: "10px",
+            border: "1px solid #bbf7d0",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            fontWeight: "500"
+          }
+        });
+      },
+      (error) => {
+         toast.error(error?.message || "Something went wrong", {
+          style: {
+            background: "#fee2e2", 
+            color: "#b91c1c",        
+            border: "1px solid #fecaca",
+            borderRadius: "8px",
+            fontWeight: 500,
+          },
+        });
+      }
+    )
+  }
+
+  const handleItemClick = (file:FileType) => {
+    if(file.isFolder){
+      navigateToFolder(file?.id, file?.name)
+    } else if(file.type.startsWith("image/")) {
+      const optimizedUrl = `${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}/tr:q-90,w-1600,h-1200,fo-auto/${file?.path}`;
+      window.open(optimizedUrl, "_blank")
+    }
+  }
+
+  const navigateToFolder = (folderId: string, folderName: string) => {
+    setCurrentFolder(folderId);
+    setFolderPath([...folderPath, { id: folderId, name: folderName }]);
+
+    // Notify parent component about folder change
+    if (onFolderChange) {
+      onFolderChange(folderId);
+    }
+  } 
+
+  const navigateToPathFolder = (index: number) => {
+    if (index < 0) {
+      setCurrentFolder(null);
+      setFolderPath([]);
+
+      // Notify parent component about folder change
+      if (onFolderChange) {
+        onFolderChange(null);
+      }
+    } else {
+      const newPath = folderPath.slice(0, index + 1);
+      setFolderPath(newPath);
+      const newFolderId = newPath[newPath.length - 1].id;
+      setCurrentFolder(newFolderId);
+
+      // Notify parent component about folder change
+      if (onFolderChange) {
+        onFolderChange(newFolderId);
+      }
+    }
+  };
+
+  const navigateUp = () => {
+    if (folderPath.length > 0) {
+      const newPath = [...folderPath];
+      newPath.pop();
+      setFolderPath(newPath);
+      const newFolderId =
+        newPath.length > 0 ? newPath[newPath.length - 1].id : null;
+      setCurrentFolder(newFolderId);
+
+      // Notify parent component about folder change
+      if (onFolderChange) {
+        onFolderChange(newFolderId);
+      }
+    }
+  }
+  
 
   if (loading) {
     return <FileLoadingState />;
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Tabs for filtering files */}
       <FileTabs
         activeTab={activeTab}
@@ -104,9 +307,9 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
       {/* Folder navigation */}
       {activeTab === "all" && (
         <FolderNavigation
-        //   folderPath={folderPath}
-        //   navigateUp={navigateUp}
-        //   navigateToPathFolder={navigateToPathFolder}
+          folderPath={folderPath}
+          navigateUp={navigateUp}
+          navigateToPathFolder={navigateToPathFolder}
         />
       )}
 
@@ -114,7 +317,7 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
       <FileActionButtons
         activeTab={activeTab}
         trashCount={trashCount}
-        // folderPath={folderPath}
+        folderPath={folderPath}
         onRefresh={fetchFiles}
         onEmptyTrash={() => setEmptyTrashModalOpen(true)}
       />
@@ -159,11 +362,11 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
                         ? "cursor-pointer"
                         : ""
                     }`}
-                    // onClick={() => handleItemClick(file)}
+                    onClick={() => handleItemClick(file)}
                   >
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <FileIcon />
+                        <FileIcon file={file} />
                         <div>
                           <div className="font-medium flex items-center gap-2 text-default-800">
                             <span className="truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px]">
@@ -245,7 +448,7 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
         </Card>
       )}
 
-      {/* <ConfirmationModal
+      <ConfirmationModal
         isOpen={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
         title="Confirm Permanent Deletion"
@@ -275,7 +478,7 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
         onConfirm={handleEmptyTrash}
         isDangerous={true}
         warningMessage={`You are about to permanently delete all ${trashCount} items in your trash. These files will be permanently removed from your account and cannot be recovered.`}
-      /> */}
+      />
 
     </div>
   )

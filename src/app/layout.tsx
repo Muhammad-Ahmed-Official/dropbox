@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
-import Providers from "./providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { UserProvider } from "@/contextApi/UserProvider";
 import ClientLayout from "./client-layout";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+import { HeroUIProvider } from "@heroui/react";
 
 
 export const metadata: Metadata = {
@@ -25,8 +17,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark h-full">
-        <body className={`${inter?.variable} h-full antialiased text-foreground bg-background`}>
+    <html lang="en" className={`dark h-full`}>
+        <body className={`h-full antialiased text-foreground bg-background`}>
+        <HeroUIProvider>
         <ClientLayout>
           <div className="flex flex-col min-h-screen">
             <Navbar />
@@ -34,6 +27,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </ClientLayout>
+        </HeroUIProvider>
         </body>
       </html>
   );

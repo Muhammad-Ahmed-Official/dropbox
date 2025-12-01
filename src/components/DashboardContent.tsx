@@ -15,18 +15,16 @@ export default function DashboardContent() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleFileUploadSuccess = useCallback(() => {
-    setRefreshTrigger((prev) => prev + 1 );
+    setRefreshTrigger((prev) => prev + 1);
   }, []);
 
-
-  const handleFolderChange = () => useCallback((folderId:string | null) => {
-    setCurrentFolder(folderId)
-  }, [])
+  const handleFolderChange = useCallback((folderId: string | null) => {
+    setCurrentFolder(folderId);
+  }, []);
 
   const { currentUser } = useUserContext();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
-  // console.log(currentUser)
 
   useEffect(() => {
     if (tabParam === "profile") {
@@ -37,18 +35,23 @@ export default function DashboardContent() {
   }, [tabParam]);
 
   return (
-        <>
+    <>
       <div className="mb-8">
         <h2 className="text-4xl font-bold text-default-900">
           Hi,{" "}
-          <span className="text-primary">
-            {currentUser?.userName?.length! > 10
-              ? `${currentUser?.userName?.substring(0, 10)}...`
-              : currentUser?.userName?.split(" ")[0] || "there"}
-          </span>
-          !
+          <span className="text-[#006fee]">
+            {currentUser?.userName
+              ? currentUser.userName.length > 10
+                ? `${currentUser.userName.substring(0, 10)}...`
+                : currentUser.userName.split(" ")[0]
+              // : currentUser?.emailAddress
+              // ? currentUser.emailAddress.split("@")[0]
+              : "there"}
+          </span>!
         </h2>
-        <p className="text-default-600 mt-2 text-lg"> Your images are waiting for you. </p>
+        <p className="text-[#D4D4D8] mt-2 text-lg">
+          Your images are waiting for you.
+        </p>
       </div>
 
       <Tabs
@@ -58,25 +61,25 @@ export default function DashboardContent() {
         selectedKey={activeTab}
         onSelectionChange={(key) => setActiveTab(key as string)}
         classNames={{
-          tabList: "gap-6",
-          tab: "py-3",
-          cursor: "bg-primary",
+          tabList: "gap-8",
+          tab: "py-4 px-2",
+          cursor: "bg-blue-600",
         }}
       >
         <Tab
           key="files"
           title={
-            <div className="flex items-center gap-3">
+            <div className={`flex items-center gap-3 ${activeTab === 'files' ? 'text-[#006fee]' : 'text-gray-500'}`}>
               <FileText className="h-5 w-5" />
-              <span className="font-medium">My Files</span>
+              <span className="font-semibold">My Files</span>
             </div>
           }
         >
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1">
-              <Card className="border border-default-200 bg-default-50 shadow-sm hover:shadow-md transition-shadow">
+              <Card className="border border-default-200 bg-default-50 shadow-md hover:shadow-lg transition-shadow">
                 <CardHeader className="flex gap-3">
-                  <FileUp className="h-5 w-5 text-primary" />
+                  <FileUp className="h-5 w-5 text-[#006fee]" />
                   <h2 className="text-xl font-semibold">Upload</h2>
                 </CardHeader>
                 <CardBody>
@@ -90,9 +93,9 @@ export default function DashboardContent() {
             </div>
 
             <div className="lg:col-span-2">
-              <Card className="border border-default-200 bg-default-50 shadow-sm hover:shadow-md transition-shadow">
+              <Card className="border border-default-200 bg-default-50 shadow-md hover:shadow-lg transition-shadow">
                 <CardHeader className="flex gap-3">
-                  <FileText className="h-5 w-5 text-primary" />
+                  <FileText className="h-5 w-5 text-[#006fee]" />
                   <h2 className="text-xl font-semibold">Your Files</h2>
                 </CardHeader>
                 <CardBody>

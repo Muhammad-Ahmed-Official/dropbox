@@ -16,12 +16,11 @@ const urlEndPoints = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
 export default function Providers({children, themeProp}:ProviderProps) {
   return (
     <ImageKitProvider urlEndpoint={urlEndPoints}>
-      <HeroUIProvider>
-        {/* <NextThemesProvider attribute="class" defaultTheme="dark"> */}
           {children}
-          <Toaster />
-        {/* </NextThemesProvider> */}
-      </HeroUIProvider>
+          <Toaster position="top-right" toastOptions={{ duration: 2000}} />
     </ImageKitProvider>
   )
 }
+
+{/* <NextThemesProvider attribute="class" defaultTheme="dark"> */}
+{/* </NextThemesProvider> */}

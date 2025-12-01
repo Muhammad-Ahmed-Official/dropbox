@@ -8,7 +8,7 @@ class ApiClient {
    private async fetch<T>(endPoint: string, options: FetchOptions = {}): Promise<T> {
   const { method = "GET", body, headers = {} } = options;
 
-  let finalHeaders = { ...headers };
+  const finalHeaders = { ...headers };
   let finalBody = body;
 
   if (!(body instanceof FormData)) {

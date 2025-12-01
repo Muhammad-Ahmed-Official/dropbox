@@ -40,13 +40,7 @@ export default function DashboardContent() {
         <h2 className="text-4xl font-bold text-default-900">
           Hi,{" "}
           <span className="text-[#006fee]">
-            {currentUser?.userName
-              ? currentUser.userName.length > 10
-                ? `${currentUser.userName.substring(0, 10)}...`
-                : currentUser.userName.split(" ")[0]
-              : currentUser?.emailAddress
-              ? currentUser.emailAddress.split("@")[0]
-              : "there"}
+            { currentUser?.emailAddress ? currentUser.emailAddress.split("@")[0] : "there"}
           </span>!
         </h2>
         <p className="text-[#D4D4D8] mt-2 text-lg">

@@ -2,9 +2,9 @@ import { apiClient } from '@/lib/api-client'
 import { asyncHandlerFront } from '@/utils/AsyncHandlerFront'
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/input'
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Progress } from '@heroui/react'
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from '@heroui/react'
 import { AlertTriangle, ArrowRight, FileUp, FolderPlus, Upload, X } from 'lucide-react'
-import React, { ReactHTMLElement, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 interface FileUploadFormProps {
@@ -16,7 +16,6 @@ interface FileUploadFormProps {
 export default function FileUploadForm({userId, currentFolder = null, onUploadSuccess} : FileUploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -65,21 +64,11 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
     formData.append("userId", userId);
     if(currentFolder) formData.append("parentId", currentFolder);
     setUploading(true);
-    setProgress(0);
     setError(null);
 
     await asyncHandlerFront(
       async() => {
-        await apiClient.uploadFile(formData, {
-          onUploadProgress: (progressEvent: any) => {
-            if (progressEvent.total) {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setProgress(percentCompleted);
-            }
-          },
-        });
+        await apiClient.uploadFile(formData);
          toast.success("File upload successfully", {
           style: {
             background: "#f0fdf4",    
@@ -245,16 +234,6 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
                 </div>
               )}
 
-              {/* {uploading && (
-                <Progress
-                  value={progress}
-                  color="primary"
-                  size="sm"
-                  showValueLabel={true}
-                  className="max-w-full"
-                />
-                ${progress}%
-              )} */}
 
               <Button color="primary" startContent={<Upload className="h-4 w-4" />} endContent={!uploading && <ArrowRight 
                 className="h-4 w-4" />} className="w-full bg-[#006fee] text-white" isLoading={uploading} isDisabled={!!error} onClick={handleUpload}>

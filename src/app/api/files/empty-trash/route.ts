@@ -41,7 +41,7 @@ export const DELETE = asyncHandler(async (request:NextRequest):Promise<NextRespo
           continue;
         }
 
-        await imageKit.deleteFile(found[0].fileId);
+        await imageKit.deleteFile(found[0]?.fileId);
       } catch (err) {
         console.error("Image delete failed:", err);
       }

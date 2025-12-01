@@ -121,8 +121,7 @@ export default function Navbar() {
                         size="sm"
                         src={currentUser?.imageUrl || undefined}
                       />
-                      <span>User..</span>
-                      {/* <span>{userDetails.displayName}</span> */}
+                      <span>{userDetails.displayName}</span>
                       <ChevronDown className="h-4 w-4" />
                     </div>
                   </Button>

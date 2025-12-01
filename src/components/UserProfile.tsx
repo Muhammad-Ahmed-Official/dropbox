@@ -94,8 +94,7 @@ export default function UserProfile() {
           {currentUser?.emailAddress && currentUser?.emailAddress.length > 0 && (
             <div className="flex items-center gap-2 mt-1 text-default-500">
               <Mail className="h-4 w-4" />
-              {/* <span>{email}</span> */}
-              <span>User</span>
+              <span>{email}</span>
             </div>
           )}
           {userRole && (

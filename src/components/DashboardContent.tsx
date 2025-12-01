@@ -44,8 +44,8 @@ export default function DashboardContent() {
               ? currentUser.userName.length > 10
                 ? `${currentUser.userName.substring(0, 10)}...`
                 : currentUser.userName.split(" ")[0]
-              // : currentUser?.emailAddress
-              // ? currentUser.emailAddress.split("@")[0]
+              : currentUser?.emailAddress
+              ? currentUser.emailAddress.split("@")[0]
               : "there"}
           </span>!
         </h2>

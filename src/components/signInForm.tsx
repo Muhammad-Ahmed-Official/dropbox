@@ -109,10 +109,11 @@ export function SignInForm() {
       <Divider />
 
       <CardFooter className="flex justify-center py-4">
-        <p className="text-sm text-default-600">
-          Don't have an account?
+       <p className="text-sm text-default-600">
+          {"Don't have an account?"}
           <Link href="/sign-up" className="text-[#046fee] hover:underline font-medium"> Sign up </Link>
         </p>
+
       </CardFooter>
     </Card>
   )

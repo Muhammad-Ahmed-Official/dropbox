@@ -3,8 +3,6 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ClientLayout from "./client-layout";
-import { HeroUIProvider } from "@heroui/react";
-
 
 export const metadata: Metadata = {
   title: "Droply",
@@ -18,8 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`dark h-full`}>
-        <body className={`h-full antialiased text-foreground bg-background`}>
-        <HeroUIProvider>
+      <body className={`h-full antialiased text-foreground bg-background`}>
         <ClientLayout>
           <div className="flex flex-col min-h-screen">
             <Navbar />
@@ -27,8 +24,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </ClientLayout>
-        </HeroUIProvider>
-        </body>
-      </html>
+      </body>
+    </html>
   );
 }

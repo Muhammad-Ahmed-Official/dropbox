@@ -1,0 +1,20 @@
+import DashboardContent from '@/components/DashboardContent';
+import { getAuthUser } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import React from 'react'
+
+export default async function Dashboard() {
+  const authUser = await getAuthUser();
+
+  if (!authUser) {
+    redirect("/sign-in");
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#18181b]">
+      <main className="flex-1 container mx-auto py-8 px-6">
+        <DashboardContent />
+      </main>
+    </div>
+  )
+}

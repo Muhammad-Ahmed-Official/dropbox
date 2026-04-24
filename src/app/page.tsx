@@ -19,12 +19,12 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-4">
                     <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                    Secure Image Storage Platform
+                    Secure File Storage Platform
                   </div>
                   <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
                     Store your{' '}
-                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                      images
+                    <span className="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      files
                     </span>{' '}
                     with confidence
                   </h1>
@@ -56,7 +56,7 @@ export default function Home() {
                       <Button
                         size="lg"
                         variant="solid"
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-6 text-lg font-semibold"
+                        className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-6 text-lg font-semibold"
                         endContent={<ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />}
                       >
                         Go to Dashboard
@@ -79,15 +79,15 @@ export default function Home() {
 
               <div className="flex justify-center order-first lg:order-last">
                 <div className="relative w-80 h-80 md:w-96 md:h-96">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse-slow"></div>
+                  <div className="absolute inset-0 bg-linear-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse-slow"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="relative w-full h-full bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-slate-700 p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                      <div className="absolute -top-4 -right-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-                        Your Images
+                      <div className="absolute -top-4 -right-4 bg-linear-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                        Your Files
                       </div>
                       <div className="grid grid-cols-2 gap-4 h-full">
                         {[1, 2, 3, 4].map((item) => (
-                          <div key={item} className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl flex items-center justify-center p-4">
+                          <div key={item} className="bg-linear-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl flex items-center justify-center p-4">
                             <ImageIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                           </div>
                         ))}
@@ -107,19 +107,19 @@ export default function Home() {
                 Everything You Need
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                Powerful features designed to make image storage simple and secure
+                Powerful features designed to make files storage simple and secure
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { icon: CloudUpload, title: "Lightning Fast Uploads", description: "Drag, drop, and watch your images upload in seconds with our optimized pipeline", gradient: "from-blue-500 to-cyan-500" },
+                { icon: CloudUpload, title: "Lightning Fast Uploads", description: "Drag, drop, and watch your files upload in seconds with our optimized pipeline", gradient: "from-blue-500 to-cyan-500" },
                 { icon: Folder, title: "Smart Organization", description: "Automatically organized with AI-powered tagging and smart folders", gradient: "from-purple-500 to-pink-500" },
                 { icon: Shield, title: "Military Grade Security", description: "End-to-end encryption and secure sharing options for complete peace of mind", gradient: "from-green-500 to-emerald-500" },
               ].map((feature, index) => (
                 <Card key={index} className="group border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 rounded-2xl overflow-hidden">
                   <CardBody className="p-8 text-center">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`inline-flex items-center justify-center w-16 h-16 bg-linear-to-r ${feature.gradient} rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300`}>
                       <feature.icon className="h-8 w-8 text-white" />
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
@@ -133,7 +133,7 @@ export default function Home() {
 
         <section className="py-12 px-4 bg-[#18181b]">
           <div className="container mx-auto max-w-4xl text-center">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 text-white shadow-2xl">
+            <div className="bg-linear-to-r from-blue-600 to-purple-600 rounded-3xl p-12 text-white shadow-2xl">
               <h2 className="text-3xl md:text-4xl font-bold mb-2">Ready to Get Started?</h2>
               <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
                 Join thousands of users who trust us with their precious memories and important images.

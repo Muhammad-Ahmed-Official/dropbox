@@ -6,7 +6,7 @@ import { getAuthUser } from "@/lib/auth";
 import { and, eq } from "drizzle-orm";
 import ImageKit from "imagekit";
 import { NextRequest, NextResponse } from "next/server";
-import { uuidv4 } from "zod";
+import { randomUUID } from "crypto";
 
 const imageKit = new ImageKit({
   publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || "",
@@ -36,15 +36,24 @@ export const POST = asyncHandler(async (request: NextRequest): Promise<NextRespo
     }
   }
 
-  if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
-    return nextError(400, "Invalid file format — only image & PDF allowed");
+  const ALLOWED_TYPES = [
+    "image/",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ];
+  const isAllowed = ALLOWED_TYPES.some((t) =>
+    t.endsWith("/") ? file.type.startsWith(t) : file.type === t
+  );
+  if (!isAllowed) {
+    return nextError(400, "Invalid file format — only images, PDF, and Word documents allowed");
   }
 
   const buffer = await file.arrayBuffer();
   const fileBuffer = Buffer.from(buffer);
   const folderPath = parentId ? `/droply/${userId}/folder/${parentId}` : `/droply/${userId}`;
   const fileExtension = file?.name?.split(".").pop() || "";
-  const uniqueFileName = `${uuidv4()}.${fileExtension}`;
+  const uniqueFileName = `${randomUUID()}.${fileExtension}`;
 
   const uploadResponse = await imageKit.upload({
     file: fileBuffer,

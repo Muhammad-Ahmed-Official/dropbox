@@ -6,7 +6,7 @@ import ClientLayout from "./client-layout";
 
 export const metadata: Metadata = {
   title: "Droply",
-  description: "Secure cloud storage for your images, powered by ImageKit",
+  description: "Secure cloud storage for your files, powered by ImageKit",
 };
 
 export default function RootLayout({

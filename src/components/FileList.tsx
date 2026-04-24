@@ -206,7 +206,7 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
       async() => {
         await apiClient.emptyTrash()
         setFiles(files.filter((file) => !file.isTrash))
-        toast.success("Folder created successfully", {
+        toast.success("Trash emptied successfully", {
         style: {
             background: "#f0fdf4",    
             color: "#166534",          
@@ -231,14 +231,22 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
     )
   }
 
-  const handleItemClick = (file:FileType) => {
-    if(file.isFolder){
-      navigateToFolder(file?.id, file?.name)
-    } else if(file.type.startsWith("image/")) {
+  const isViewableFile = (file: FileType) =>
+    file.type.startsWith("image/") ||
+    file.type === "application/pdf" ||
+    file.type === "application/msword" ||
+    file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+  const handleItemClick = (file: FileType) => {
+    if (file.isFolder) {
+      navigateToFolder(file?.id, file?.name);
+    } else if (file.type.startsWith("image/")) {
       const optimizedUrl = `${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}/tr:q-90,w-1600,h-1200,fo-auto/${file?.path}`;
-      window.open(optimizedUrl, "_blank")
+      window.open(optimizedUrl, "_blank");
+    } else if (isViewableFile(file)) {
+      window.open(file.fileUrl, "_blank");
     }
-  }
+  };
 
   const navigateToFolder = (folderId: string, folderName: string) => {
     setCurrentFolder(folderId);
@@ -358,7 +366,7 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
                   <TableRow
                     key={file.id}
                     className={`hover:bg-default-100 transition-colors ${
-                      file.isFolder || file.type.startsWith("image/")
+                      file.isFolder || isViewableFile(file)
                         ? "cursor-pointer"
                         : ""
                     }`}
@@ -369,7 +377,7 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
                         <FileIcon file={file} />
                         <div>
                           <div className="font-medium flex items-center gap-2 text-default-800">
-                            <span className="truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px]">
+                            <span className="truncate max-w-37.5 sm:max-w-50 md:max-w-75">
                               {file.name}
                             </span>
                             {file.isStarred && (
@@ -385,8 +393,8 @@ export default function FileList({userId, refreshTrigger=0, onFolderChange} : Fi
                                 <Folder className="h-3 w-3 text-default-400" />
                               </Tooltip>
                             )}
-                            {file.type.startsWith("image/") && (
-                              <Tooltip content="Click to view image">
+                            {!file.isFolder && isViewableFile(file) && (
+                              <Tooltip content="Click to view file">
                                 <ExternalLink className="h-3 w-3 text-default-400" />
                               </Tooltip>
                             )}

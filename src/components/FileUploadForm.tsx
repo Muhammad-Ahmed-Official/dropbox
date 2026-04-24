@@ -21,7 +21,7 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
   const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     if(e.target.files && e.target.files[0]){
       const selectedFile = e.target.files[0];
-      if(selectedFile?.size > 5 * 1014 * 1024){
+      if(selectedFile?.size > 5 * 1024 * 1024){
         setError("File size exceed 5MB limit");
         return;
       }
@@ -35,7 +35,7 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
 
     if(e.dataTransfer?.files && e.dataTransfer?.files[0]){
       const selectedFile = e.dataTransfer?.files[0];
-      if(selectedFile?.size > 5 * 1014 * 1024){
+      if(selectedFile?.size > 5 * 1024 * 1024){
         setError("File size exceed 5MB limit");
         return;
       }
@@ -101,7 +101,7 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
     setUploading(false);
   };
   
-  const [folderName, setFolderName] = useState<string>('');3
+  const [folderName, setFolderName] = useState<string>('');
   const [folderModalOpen, setFolderModalOpen] = useState<boolean>(false);
   const [creatingFolder, setCreatingFolder] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
@@ -169,7 +169,7 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
         </Button>
         <Button variant="flat" startContent={<FileUp className="h-4 w-4" />} className="text-[#006fee] bg-[#132946] flex-1"
           onClick={() => fileInputRef.current?.click()} >
-          Add Image
+          Add File
         </Button>
       </div>
         
@@ -189,20 +189,20 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
           <div className="space-y-3">
             <FileUp className="h-12 w-12 mx-auto text-[#006fee]" />
             <div>
-              <p className="text-default-600"> Drag and drop your image here, or{" "}
+              <p className="text-default-600"> Drag and drop your file here, or{" "}
                 <button type="button" className="text-[#006fee] cursor-pointer font-medium inline bg-transparent border-0 p-0 m-0"
                   onClick={() => fileInputRef.current?.click()} >
                   browse
                 </button>
               </p>
-              <p className="text-xs text-default-500 mt-1">Images up to 5MB</p>
+              <p className="text-xs text-default-500 mt-1">Files up to 5MB</p>
             </div>
             <Input
               type="file"
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
-              accept="image/*"
+              accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             />
           </div>
          ) : 
@@ -213,7 +213,7 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
                 <div className='flex space-x-3'>
                   <div className="p-2 bg-primary/10 rounded-md"> <FileUp className="h-5 w-5 text-[#006fee]" /> </div>
                   <div className="text-left">
-                    <p className="text-sm font-medium truncate max-w-[180px]"> {file.name} </p>
+                    <p className="text-sm font-medium truncate max-w-45"> {file.name} </p>
                     <p className="text-xs text-default-500">
                       {file.size < 1024
                         ? `${file.size} B`
@@ -237,7 +237,7 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
 
               <Button color="primary" startContent={<Upload className="h-4 w-4" />} endContent={!uploading && <ArrowRight 
                 className="h-4 w-4" />} className="w-full bg-[#006fee] text-white" isLoading={uploading} isDisabled={!!error} onClick={handleUpload}>
-                {uploading ? `Uploading...` : "Upload Image"}
+                {uploading ? `Uploading...` : "Upload File"}
               </Button>
             </div>
           </div>
@@ -247,8 +247,8 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
       <div className="bg-default-100/5 p-4 rounded-lg">
         <h4 className="text-sm font-medium mb-2">Tips</h4>
         <ul className="text-xs text-default-600 space-y-1">
-          <li>• Images are private and only visible to you</li>
-          <li>• Supported formats: JPG, PNG, GIF, WebP</li>
+          <li>• Files are private and only visible to you</li>
+          <li>• Supported formats: JPG, PNG, GIF, WebP, PDF, DOC, DOCX</li>
           <li>• Maximum file size: 5MB</li>
         </ul>
       </div>
@@ -277,7 +277,7 @@ export default function FileUploadForm({userId, currentFolder = null, onUploadSu
               <Input
                 type="text"
                 label="Folder Name"
-                placeholder="My Images"
+                placeholder="My Files"
                 value={folderName}
                 onChange={(e) => setFolderName(e.target.value)}
                 autoFocus

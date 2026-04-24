@@ -52,7 +52,7 @@ export function SignUpForm() {
     <Card className="w-full max-w-md border border-default-200 bg-default-50 shadow-xl">
       <CardHeader className="flex flex-col gap-1 items-center pb-2">
         <h1 className="text-2xl font-bold text-default-900">Create Your Account</h1>
-        <p className="text-default-500 text-center">Sign up to start managing your images securely</p>
+        <p className="text-default-500 text-center">Sign up to start managing your files securely</p>
       </CardHeader>
 
       <Divider />

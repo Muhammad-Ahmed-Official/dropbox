@@ -45,7 +45,7 @@ export default function DashboardContent() {
           </span>!
         </h2>
         <p className="text-[#D4D4D8] mt-2 text-lg">
-          Your images are waiting for you.
+          Your files are waiting for you.
         </p>
       </div>
 

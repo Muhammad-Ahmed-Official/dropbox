@@ -13,6 +13,7 @@ import {
 } from '@heroui/react';
 import {
   Download,
+  FileText,
   ImageIcon,
   Send,
   Wifi,
@@ -44,7 +45,7 @@ export default function LocalShareTab() {
 
   const handleFileReceived = useCallback((file: ReceivedFile) => {
     setReceivedFiles((prev) => [file, ...prev]);
-    toast.success(`Image received from ${file.fromUserName}!`);
+    toast.success(`Files received from ${file.fromUserName}!`);
   }, []);
 
   const { sendFile, isSending, sendProgress } = useWebRTC(
@@ -74,9 +75,12 @@ export default function LocalShareTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const SHAREABLE_TYPES = ['image/', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  const isShareable = (file: File) => SHAREABLE_TYPES.some((t) => t.endsWith('/') ? file.type.startsWith(t) : file.type === t);
+
   const pickFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error('Only image files can be shared.');
+    if (!isShareable(file)) {
+      toast.error('Only images, PDFs, and Word documents can be shared.');
       return;
     }
     setSelectedFile(file);
@@ -97,11 +101,11 @@ export default function LocalShareTab() {
 
   const handleSend = async () => {
     if (!selectedFile || !selectedUserId) {
-      toast.error('Select a recipient and an image first.');
+      toast.error('Select a recipient and an file first.');
       return;
     }
     await sendFile(selectedFile, selectedUserId);
-    toast.success('Image sent!');
+    toast.success('File sent!');
     setSelectedFile(null);
     setSelectedUserId('');
   };
@@ -128,7 +132,7 @@ export default function LocalShareTab() {
         <CardHeader className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Send className="h-5 w-5 text-[#006fee]" />
-            <h2 className="text-xl font-semibold">Send Image</h2>
+            <h2 className="text-xl font-semibold">Send Files</h2>
           </div>
           <Chip
             size="sm"
@@ -177,20 +181,24 @@ export default function LocalShareTab() {
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
             className={`
-              relative flex min-h-[180px] cursor-pointer flex-col items-center justify-center
+              relative flex min-h-45 cursor-pointer flex-col items-center justify-center
               rounded-xl border-2 border-dashed transition-colors
               ${isDragging ? 'border-[#006fee] bg-blue-950/20' : 'border-default-300 bg-default-100'}
               ${isSending ? 'cursor-not-allowed opacity-60' : 'hover:border-[#006fee] hover:bg-default-200/50'}
             `}
           >
-            {previewUrl ? (
+            {selectedFile ? (
               <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={previewUrl}
-                  alt="preview"
-                  className="max-h-[160px] rounded-lg object-contain"
-                />
+                {selectedFile.type.startsWith('image/') && previewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={previewUrl}
+                    alt="preview"
+                    className="max-h-40 rounded-lg object-contain"
+                  />
+                ) : (
+                  <FileText className="h-12 w-12 text-default-400" />
+                )}
                 <p className="mt-2 text-xs text-default-400">
                   {selectedFile?.name} · {formatBytes(selectedFile?.size ?? 0)}
                 </p>
@@ -199,9 +207,9 @@ export default function LocalShareTab() {
               <>
                 <ImageIcon className="h-10 w-10 text-default-400" />
                 <p className="mt-3 text-sm font-medium text-default-500">
-                  Drop an image here or click to select
+                  Drop a file here or click to select
                 </p>
-                <p className="mt-1 text-xs text-default-400">PNG, JPG, GIF, WEBP…</p>
+                <p className="mt-1 text-xs text-default-400">Images, PDF, DOC, DOCX…</p>
               </>
             )}
           </div>
@@ -209,7 +217,7 @@ export default function LocalShareTab() {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             className="hidden"
             onChange={handleInputChange}
           />
@@ -234,7 +242,7 @@ export default function LocalShareTab() {
             startContent={isSending ? undefined : <Send className="h-4 w-4" />}
             className="w-full"
           >
-            {isSending ? `Sending… ${sendProgress}%` : 'Send Image'}
+            {isSending ? `Sending… ${sendProgress}%` : 'Send File'}
           </Button>
         </CardBody>
       </Card>
@@ -243,7 +251,7 @@ export default function LocalShareTab() {
       <Card className="border border-default-200 bg-default-50 shadow-md">
         <CardHeader className="flex items-center gap-3">
           <Download className="h-5 w-5 text-[#006fee]" />
-          <h2 className="text-xl font-semibold">Received Images</h2>
+          <h2 className="text-xl font-semibold">Received Files</h2>
           {receivedFiles.length > 0 && (
             <Chip size="sm" color="primary" variant="flat">
               {receivedFiles.length}
@@ -253,9 +261,9 @@ export default function LocalShareTab() {
 
         <CardBody>
           {receivedFiles.length === 0 ? (
-            <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 text-default-400">
+            <div className="flex min-h-60 flex-col items-center justify-center gap-3 text-default-400">
               <Download className="h-10 w-10" />
-              <p className="text-sm">Images shared with you will appear here.</p>
+              <p className="text-sm">Files shared with you will appear here.</p>
               <p className="text-xs">They are stored only in your browser — not in the cloud.</p>
             </div>
           ) : (
@@ -274,12 +282,18 @@ export default function LocalShareTab() {
                     <X className="h-3 w-3 text-white" />
                   </button>
 
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={file.url}
-                    alt={file.name}
-                    className="h-36 w-full object-cover"
-                  />
+                  {file.type?.startsWith('image/') ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      className="h-36 w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-36 w-full flex items-center justify-center bg-default-200">
+                      <FileText className="h-14 w-14 text-default-400" />
+                    </div>
+                  )}
 
                   <div className="px-3 py-2">
                     <p className="truncate text-xs font-medium text-default-700">{file.name}</p>
